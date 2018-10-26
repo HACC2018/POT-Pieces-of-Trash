@@ -1,0 +1,4 @@
+venv/
+static/data/images
+.idea/
+__pycache__

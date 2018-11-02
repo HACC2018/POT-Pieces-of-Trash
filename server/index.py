@@ -16,11 +16,10 @@ app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = 'static/data/images'
 
-client = MongoClient()
-db = client['waste_audit']
+client = MongoClient('mongodb://mckuok:default_password1@ds149593.mlab.com:49593/heroku_d3rd5mg4')
+db = client['heroku_d3rd5mg4']
 result_collection = db['audit_results']
 location_collection = db['locations']
-
 
 @app.route('/')
 def hello():
@@ -55,6 +54,9 @@ def analyze_image():
         filename = str(uuid.uuid4()) + '.' + extension
 
         path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        if not os.path.exists(app.config['UPLOAD_FOLDER']):
+            os.makedirs(app.config['UPLOAD_FOLDER'])
+
         image.save(path)
         wastes = trash_analysis(path)
 

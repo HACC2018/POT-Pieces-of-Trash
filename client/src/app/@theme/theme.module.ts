@@ -49,8 +49,10 @@ import {
 import { DEFAULT_THEME } from './styles/theme.default';
 import { COSMIC_THEME } from './styles/theme.cosmic';
 import { CORPORATE_THEME } from './styles/theme.corporate';
+import { UploadImageModal } from './components/header/upload-image/upload-image.component';
+import { HttpClientModule } from '@angular/common/http';
 
-const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule];
+const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule];
 
 const NB_MODULES = [
   NbCardModule,
@@ -84,10 +86,12 @@ const COMPONENTS = [
   SampleLayoutComponent,
   ThreeColumnsLayoutComponent,
   TwoColumnsLayoutComponent,
+  UploadImageModal,
 ];
 
 const ENTRY_COMPONENTS = [
   ThemeSwitcherListComponent,
+  UploadImageModal
 ];
 
 const PIPES = [

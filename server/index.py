@@ -264,6 +264,10 @@ def actions_items():
         pass
 
 
+@app.route('/waste-types')
+def get_waste_types():
+    return jsonify({'waste-types:': ['starbucks', 'paper cups', 'straws', 'forks', 'knifes', 'paper', 'cans']}), 200
+
 @app.route('/static/<path:path>')
 def serve_static_file(path):
     return send_from_directory('static', path)

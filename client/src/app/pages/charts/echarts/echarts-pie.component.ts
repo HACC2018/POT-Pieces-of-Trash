@@ -1,5 +1,8 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, Input, OnChanges} from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
+import {TrashCollectionService} from '../../../@core/data/trash-collection.service';
+
+import * as _ from 'lodash';
 
 @Component({
   selector: 'ngx-echarts-pie',
@@ -7,27 +10,32 @@ import { NbThemeService } from '@nebular/theme';
     <div echarts [options]="options" class="echart"></div>
   `,
 })
-export class EchartsPieComponent implements AfterViewInit, OnDestroy {
+export class EchartsPieComponent implements AfterViewInit, OnChanges, OnDestroy {
+
+  @Input() legendData: string[];
+  @Input() chartData: any[];
+
   options: any = {};
   themeSubscription: any;
-  // Temp mock data
-  mockData = {
-    wastes: {
-      cups: 24,
-      straws: 56,
-      knifes: 35,
-    },
-    timestamp: 153717738,
-    location: 'Keller',
-    unit: 'lb',
 
-  };
-  mockLocations = ['Keller'];
+  // Pie chart data
+  data: any;
 
   constructor(private theme: NbThemeService) {
   }
 
+  ngOnChanges() {
+    if (this.legendData && this.chartData) {
+      this.render();
+    }
+  }
+
+
   ngAfterViewInit() {
+    this.render();
+  }
+
+  render() {
     this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
 
       const colors = config.variables;
@@ -43,24 +51,18 @@ export class EchartsPieComponent implements AfterViewInit, OnDestroy {
         legend: {
           orient: 'vertical',
           left: 'left',
-          data: ['USA', 'Germany', 'France', 'Canada', 'Russia'],
+          data: this.legendData,
           textStyle: {
             color: echarts.textColor,
           },
         },
         series: [
           {
-            name: 'Countries',
+            name: 'Trash Found',
             type: 'pie',
             radius: '80%',
             center: ['50%', '50%'],
-            data: [
-              { value: 335, name: 'Germany' },
-              { value: 310, name: 'France' },
-              { value: 234, name: 'Canada' },
-              { value: 135, name: 'Russia' },
-              { value: 1548, name: 'USA' },
-            ],
+            data: this.chartData,
             itemStyle: {
               emphasis: {
                 shadowBlur: 10,
@@ -91,4 +93,6 @@ export class EchartsPieComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.themeSubscription.unsubscribe();
   }
+
+
 }

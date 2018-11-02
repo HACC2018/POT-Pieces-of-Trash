@@ -3,13 +3,14 @@
     <nb-card>
       <nb-card-header>
         Trash by Location
-        <select name="location">
-          <option value="keller">Keller</option>
+        <select #selectedLocation (change)="setLocation(selectedLocation.value)">
+          <option *ngFor="let place of locations" value="{{place}}">{{place}}</option>
         </select>
 
       </nb-card-header>
       <nb-card-body>
-        <ngx-echarts-pie></ngx-echarts-pie>
+        <ngx-echarts-pie *ngIf="trashTypes && formattedPieChartData"
+                         [legendData]="trashTypes" [chartData]="formattedPieChartData"></ngx-echarts-pie>
       </nb-card-body>
     </nb-card>
   </div>

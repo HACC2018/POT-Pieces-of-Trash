@@ -16,8 +16,9 @@ export class PagesComponent implements OnInit {
 
   menu = MENU_ITEMS;
 
-  constructor(private themeService: NbThemeService) {
+  constructor(private themeService: NbThemeService) {}
+
+  ngOnInit(): void {
     this.themeService.changeTheme('default');
   }
-  ngOnInit(): void {}
 }

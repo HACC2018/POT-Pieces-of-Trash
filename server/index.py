@@ -138,10 +138,9 @@ def pie_chart():
                 options[start_of_day] = set()
             options[start_of_day].add(entry['location'])
 
-        available_dates = {}
+        available_dates = []
         for date in options:
-            available_dates['date'] = date
-            available_dates['locations'] = list(options[date])
+            available_dates.append({'date': date, 'locations': list(options[date])})
 
         return jsonify(available_dates), 200
 
@@ -215,6 +214,8 @@ def time_series():
             if not is_all_wastes:
                 if entry_waste not in waste_types:
                     continue
+                else:
+                    waste = entry_waste
             else:
                 waste = 'all'
 

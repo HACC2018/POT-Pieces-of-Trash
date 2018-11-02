@@ -3,12 +3,14 @@
 ## python environment
 I am using `python 3.6.6`, anything above `python 3` should work. I am using [`virtualenv`](https://virtualenv.pypa.io/en/stable/installation/) to set up the libraries for python. 
 
+
 To install all the dependencies:
 1. `cd server`
 2. `virtualenv -p python3 venv`
 3. `source venv/bin/activate`
-4. `pip install -r requirements.txt`
-5. `python index.py` to start the server.
+4. The image processing currently requires pytorch.  If you are using anaconda then `conda install pytorch -c pytorch`.  Otherwise the pip command is OS dependant.  Sorry!
+5. `pip install -r requirements.txt`
+6. `python index.py` to start the server.
 
 
 ## database

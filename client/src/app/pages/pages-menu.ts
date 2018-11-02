@@ -2,19 +2,16 @@ import { NbMenuItem } from '@nebular/theme';
 
 export const MENU_ITEMS: NbMenuItem[] = [
   {
-    title: 'E-commerce',
-    icon: 'nb-e-commerce',
-    link: '/pages/dashboard',
+    title: 'Home',
+    icon: 'fa fa-chart-bar',
+    link: '/pages/charts/echarts',
     home: true,
   },
   {
-    title: 'IoT Dashboard',
-    icon: 'nb-home',
-    link: '/pages/iot-dashboard',
-  },
-  {
-    title: 'FEATURES',
-    group: true,
+    title: 'Upload',
+    icon: 'nb-plus',
+    link: '/pages/dashboard',
+    home: false,
   },
   {
     title: 'UI Features',
@@ -52,33 +49,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
       {
         title: 'Tabs',
         link: '/pages/ui-features/tabs',
-      },
-    ],
-  },
-  {
-    title: 'Forms',
-    icon: 'nb-compose',
-    children: [
-      {
-        title: 'Form Inputs',
-        link: '/pages/forms/inputs',
-      },
-      {
-        title: 'Form Layouts',
-        link: '/pages/forms/layouts',
-      },
-    ],
-  },
-  {
-    title: 'Components',
-    icon: 'nb-gear',
-    children: [
-      {
-        title: 'Tree',
-        link: '/pages/components/tree',
-      }, {
-        title: 'Notifications',
-        link: '/pages/components/notifications',
       },
     ],
   },
@@ -123,20 +93,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
     ],
   },
   {
-    title: 'Editors',
-    icon: 'nb-title',
-    children: [
-      {
-        title: 'TinyMCE',
-        link: '/pages/editors/tinymce',
-      },
-      {
-        title: 'CKEditor',
-        link: '/pages/editors/ckeditor',
-      },
-    ],
-  },
-  {
     title: 'Tables',
     icon: 'nb-tables',
     children: [
@@ -153,28 +109,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
       {
         title: '404',
         link: '/pages/miscellaneous/404',
-      },
-    ],
-  },
-  {
-    title: 'Auth',
-    icon: 'nb-locked',
-    children: [
-      {
-        title: 'Login',
-        link: '/auth/login',
-      },
-      {
-        title: 'Register',
-        link: '/auth/register',
-      },
-      {
-        title: 'Request Password',
-        link: '/auth/request-password',
-      },
-      {
-        title: 'Reset Password',
-        link: '/auth/reset-password',
       },
     ],
   },

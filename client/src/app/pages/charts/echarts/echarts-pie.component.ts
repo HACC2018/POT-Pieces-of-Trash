@@ -10,6 +10,19 @@ import { NbThemeService } from '@nebular/theme';
 export class EchartsPieComponent implements AfterViewInit, OnDestroy {
   options: any = {};
   themeSubscription: any;
+  // Temp mock data
+  mockData = {
+    wastes: {
+      cups: 24,
+      straws: 56,
+      knifes: 35,
+    },
+    timestamp: 153717738,
+    location: 'Keller',
+    unit: 'lb',
+
+  };
+  mockLocations = ['Keller'];
 
   constructor(private theme: NbThemeService) {
   }

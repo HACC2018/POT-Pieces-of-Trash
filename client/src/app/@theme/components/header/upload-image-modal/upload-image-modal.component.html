@@ -1,0 +1,22 @@
+<div class="modal-header">
+  <span> Choose an image </span>
+  <button class="close" aria-label="Close" (click)="closeModal()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form #form>
+    <div class="row">
+       <div class="col-sm-6">
+         <input type="file" name="image">
+       </div>
+       <div class="col-sm-6">
+         <input type="text" name="location" value="Bilger">
+        </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-md btn-primary" (click)="closeModal()">Save changes</button>
+  <button class="btn btn-md btn-primary" (click)="sendForm()">Submit image</button>
+</div>

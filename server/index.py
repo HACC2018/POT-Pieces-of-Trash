@@ -16,8 +16,15 @@ app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = 'static/data/images'
 
-client = MongoClient('mongodb://mckuok:default_password1@ds149593.mlab.com:49593/heroku_d3rd5mg4')
-db = client['heroku_d3rd5mg4']
+mongodb_uri = os.getenv('MONGODB_URI', None)
+db_name = os.getenv('DATABASE_NAME', 'waste_audit')
+
+if mongodb_uri:
+    client = MongoClient(mongodb_uri)
+else:
+    client = MongoClient()
+
+db = client[db_name]
 result_collection = db['audit_results']
 location_collection = db['locations']
 

@@ -30,7 +30,7 @@ class TrashCounter(object):
     """
 
     def __init__(self, background=NormalBackground(), detector=ConnectedComponentBoundingBox(),
-                 classifier=ClassifyWithDeepNetFeatures(ask_user=True)):
+                 classifier=ClassifyWithDeepNetFeatures()):
         self.background = background
         self.detector = detector
         self.classifier = classifier

@@ -13,3 +13,5 @@ pretrainedmodels
 numpy
 pillow
 matplotlib
+uuid
+opencv-python

@@ -1,5 +1,7 @@
 
 from skimage.morphology import label, square, opening, closing
+
+import cv2
 import numpy as np
 
 
@@ -21,48 +23,62 @@ class ConnectedComponentBoundingBox(object):
 
     """
     
-    def __init__(self, min_size=20, opening_size=3, closing_size=3):
+    def __init__(self, min_size=500, opening_size=3, closing_size=20,
+                 min_width=20, min_height=20):
         """
         """
         
         self.min_size = min_size
         self.opening_size = opening_size
         self.closing_size = closing_size
+        self.min_width = min_width
+        self.min_height = min_height
     
     def get_bounding_boxes(self, binarized_image):
-        """ Convert a binarized image into rectangular "chips"
+        """ Get the bounding boxes for objects in the image
+        
+        This class accepts a binarized image and the filters using 
+        various morphological operations and size constraints.  For 
+        speed we use OpenCV wherever possible. 
         """
+        
+        # Convert from boolean to uint8
+        binarized_image = 255*binarized_image.astype("uint8")
+        
         # Perform an opening transform to remove spots
-        binarized_image = opening(binarized_image, square(self.opening_size))
-
+        binarized_image = cv2.morphologyEx(binarized_image, cv2.MORPH_OPEN, np.ones(self.opening_size, dtype="uint8"))
+                
         # And a closing to remove holes
-        binarized_image = closing(binarized_image, square(self.closing_size))
+        binarized_image = cv2.morphologyEx(binarized_image, cv2.MORPH_CLOSE, np.ones(self.closing_size, dtype="uint8"))
 
         # Compute the connected components
-        connected_components, max_num = label(binarized_image, background=0, 
-                                              return_num=True)
-        
-        component_bounds = []
-        
-        # For each connected component...
-        for ii in range(1, max_num+1):
-            
-            connected_mask = connected_components == ii
+        max_num, connected_components = cv2.connectedComponents(binarized_image)
 
-            # If the blob is still too small...skip!
-            if sum(connected_mask.ravel()) < self.min_size:
+        # Bounding box computation
+
+        # Create an array of indexes        
+        cc, rr = np.meshgrid(np.arange(binarized_image.shape[1]), np.arange(binarized_image.shape[0]))
+           
+        #For each bounding box, check the size constraints 
+        component_bounds = []
+        for ii in range(1, max_num):
+        
+            mask = connected_components == ii
+            
+            # Violates absolute count constraints
+            if np.sum(mask.ravel()) < self.min_size:
+                continue
+            
+            rows = rr[mask]
+            cols = cc[mask]
+            
+            bbox = (min(rows), min(cols), max(rows), max(cols))
+            
+            # Violates width and height constraints
+            if bbox[2] - bbox[0] < self.min_height or bbox[3] - bbox[1] < self.min_width:
                 continue
 
-            # Otherwise, compute the bounding box
-            rows = np.nonzero(np.any(connected_mask, axis=1))[0]
-            min_row = rows[0]
-            max_row = rows[-1]
-
-            cols = np.nonzero(np.any(connected_mask, axis=0))[0]
-            min_col = cols[0]
-            max_col = cols[-1]
-            
-            component_bounds.append((min_row, min_col, max_row, max_col))
+            component_bounds.append(bbox)
             
         return component_bounds
     

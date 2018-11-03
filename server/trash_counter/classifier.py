@@ -3,6 +3,7 @@ import torch
 import pretrainedmodels
 import pretrainedmodels.utils as utils
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.exceptions import NotFittedError
 import numpy as np
 import pylab as pyl
@@ -34,10 +35,10 @@ class ClassifyWithDeepNetFeatures(object):
     for future analysis
     """
 
-    def __init__(self, classifier=KNeighborsClassifier(n_neighbors=1), 
-                feature_model=pretrainedmodels.inceptionv4(num_classes=1000, pretrained='imagenet'), 
-                image_transformer=None, image_type=None, padding=0,
-                ask_user=False):
+    def __init__(self, 
+                 classifier=LogisticRegression(),
+                 feature_model=pretrainedmodels.inceptionv4(num_classes=1000, pretrained='imagenet'), 
+                 image_transformer=None, image_type=None, padding=0):
         """
         Arguments
         =========
@@ -58,9 +59,6 @@ class ClassifyWithDeepNetFeatures(object):
         padding - int
             The amount of padding to put around the bounding box (i.e., extra pixels to retain)
             
-        ask_user - bool
-            If true, ask the user to confirm solutions (or just for a soln if
-            we have yet to train)
         """
 
         self.classifier = classifier
@@ -83,10 +81,7 @@ class ClassifyWithDeepNetFeatures(object):
 
         # Map strings to integers
         self.label_mapping = []
-        
-        self.ask_user = ask_user
-        
-        self.data_sets = []
+                
 
     def get_features(self, image, bbox):
         """ Get the features for a bounding box in the image
@@ -99,6 +94,10 @@ class ClassifyWithDeepNetFeatures(object):
         bbox - 4 tuple of ints
             The bounding box (min_row, min_col, max_row, max_col) in pixel coordinates
         """
+        
+        if not isinstance(image, np.ndarray):
+            image = np.array(image)
+        
         min_row, min_col, max_row, max_col = bbox
 
         # Pad the bounding box
@@ -122,46 +121,28 @@ class ClassifyWithDeepNetFeatures(object):
         return features
 
 
-    def fit(self, data_sets):
+    def fit(self, features, label_list):
         """ Train the classifier
 
-        This method trains the classifier given a list of data sets.  Each data set 
-        should be a dictionary with three keys:
-        {
-            image: the full image
-            bounding_boxes: a list of bounding boxes
-            labels: a list of labels
-        }
-
-        Calling this method could overwrite any existing trainining depending on the
-        underlying classifier.  
+        Calling this method could overwrite any existing trainining depending 
+        on the underlying classifier.  This behavior is determined by
+        the underlying model. 
         """
-        feature_array = None
-        label_list = []
-
-        for image, bounding_boxes, labels in data_sets:
-
-            image = np.array(image.convert(self.image_type))
-
-            for bounding_box, label in zip(bounding_boxes, labels):
-                features = self.get_features(image, bounding_box)
-                
-                if feature_array is None:
-                    feature_array = features.reshape((1, -1))
-                else:
-                    feature_array = np.r_[feature_array, features.reshape((1, -1))]
-                
-                label_list.append(label)
 
         # We want to feed the labels as a list of ints.  Generate the mapping from strings to int
         self.label_mapping = list(set(label_list))
         label_array = np.array([self.label_mapping.index(label) for label in label_list])
 
         # Save the arrays for debugging
-        self.training_X, self.training_Y = feature_array, label_array
-        self.classifier.fit(feature_array, label_array)
+        self.classifier.fit(features, label_array)
 
     def predict(self, raw_image, bboxes):
+        """ Return a prediction for each bounding box
+        
+        Returns a string with the predicted class associated with
+        each bounding box.  The order of the labels will match the
+        order the bounding boxes are provided in
+        """
         image = np.array(raw_image.convert(self.image_type))
 
         feature_array = None
@@ -174,62 +155,9 @@ class ClassifyWithDeepNetFeatures(object):
             else:
                 feature_array = np.r_[feature_array, features.reshape((1, -1))]
 
-        if self.ask_user:
-            try:
-                
-                labels = []
-                for ii in range(len(feature_array)):
-                    label_index = self.classifier.predict(feature_array[ii].reshape((1, -1)))
-                    label = self.label_mapping[label_index.astype("int")[0]]
-
-                    pyl.figure()
-                    pyl.ion()
-                    pyl.show()
-                    pyl.imshow(image)
-                    plot_bbox(bboxes[ii])
-                    pyl.title("Is this a " + label + "?")
-                    pyl.draw()
-                    fig = pyl.gcf()
-                    fig.canvas.manager.window.raise_()
-                    pyl.pause(0.1)
-                    
-                    new_label = input("Input the label for this chip (or hit enter if it is correct):\n").strip()
-                    
-                    if new_label:
-                        labels.append(new_label)
-                    else:
-                        labels.append(label)
-
-                self.data_sets.append((raw_image, bboxes, labels))
-
-                return labels
-
-            except NotFittedError:
-                labels = []
-                
-                for ii in range(len(feature_array)):
-                    pyl.figure()
-                    pyl.ion()
-                    pyl.show()
-                    pyl.imshow(image)
-                    plot_bbox(bboxes[ii])
-                    pyl.draw()
-                    fig = pyl.gcf()
-                    fig.canvas.manager.window.raise_()
-                    pyl.pause(0.1)
-                    
-                    label = input("Input the label for this chip:\n")
-                    pyl.close("all")            
-                    labels.append(label)
-                    
-                self.data_sets.append((raw_image, bboxes, labels))
-                return labels                
-                                
-                
-        else:
-            label_indexes = self.classifier.predict(feature_array)
-            return [self.label_mapping[label_index] for label_index in label_indexes]
-                
-                
+        label_indexes = self.classifier.predict(feature_array)
+        return [self.label_mapping[label_index] for label_index in label_indexes]
+            
+            
 
 

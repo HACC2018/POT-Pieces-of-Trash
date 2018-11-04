@@ -1,8 +1,8 @@
 const PIE_MOCK_KELLER = {
   wastes: {
-    Cups: 24,
-    Straws: 56,
-    Knifes: 35,
+    starbucks: 24,
+    straws: 56,
+    forks: 35,
   },
   timestamp: 153717738,
   location: 'Keller',
@@ -12,9 +12,9 @@ const PIE_MOCK_KELLER = {
 
 const PIE_MOCK_KUYKENDALL = {
   wastes: {
-    Cups: 3,
-    Straws: 48,
-    Knifes: 55,
+    'paper cups': 3,
+    straws: 48,
+    forks: 55,
   },
   timestamp: 153717738,
   location: 'Kuykendall',
@@ -24,9 +24,10 @@ const PIE_MOCK_KUYKENDALL = {
 
 const PIE_MOCK_POST = {
   wastes: {
-    Cups: 43,
-    Straws: 98,
-    Knifes: 25,
+    cans: 43,
+    straws: 98,
+    forks: 25,
+    'paper cups': 34,
   },
   timestamp: 153717738,
   location: 'POST',
@@ -34,9 +35,9 @@ const PIE_MOCK_POST = {
 };
 const PIE_MOCK_HOLMES = {
   wastes: {
-    Cups: 30,
-    Straws: 18,
-    Knifes: 5,
+    cans: 30,
+    straws: 18,
+    paper: 5,
   },
   timestamp: 153717738,
   location: 'Holmes',

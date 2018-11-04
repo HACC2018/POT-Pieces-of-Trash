@@ -21,10 +21,17 @@ export class EchartsComponent implements OnInit {
 
   ngOnInit() {
     // TODO make this observable
-    this.locations = this.trashSvc.getLocations();
-     this.setLocation(this.locations[0]);
-    this.trashTypes = this.trashSvc.getTrashTypes();
-    this.formattedPieChartData = this.formatData();
+    this.trashSvc.getLocations()
+      .subscribe(locations => {
+        this.locations = locations;
+        this.setLocation(this.locations[0]);
+
+        this.trashSvc.getTrashTypes()
+          .subscribe(types => {
+            this.trashTypes = _.forEach(types, type => _.capitalize(type));
+            this.formattedPieChartData = this.formatData();
+          });
+      });
   }
 
   setLocation(location: string) {

@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {TrashCollectionService} from '../../../@core/data/trash-collection.service';
-import {loadConfigurationFromPath} from 'tslint/lib/configuration';
 import * as _ from 'lodash';
 
 @Component({

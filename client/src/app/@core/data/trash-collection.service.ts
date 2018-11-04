@@ -3,9 +3,9 @@ import {PIE_TRASH_DATA} from './mocks/pie.mock';
 
 import * as _ from 'lodash';
 // Mock data imports
-import {LOCATIONS_MOCK, TRASH_TYPES_MOCK} from './mocks/lists.mock';
+import {LOCATIONS_MOCK} from './mocks/lists.mock';
 import {Observable, of} from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import {HttpClient} from '@angular/common/http';
 @Injectable()
 export class TrashCollectionService {

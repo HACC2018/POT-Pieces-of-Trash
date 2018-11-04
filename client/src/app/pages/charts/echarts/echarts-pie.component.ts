@@ -1,8 +1,5 @@
 import {AfterViewInit, Component, OnDestroy, Input, OnChanges} from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
-import {TrashCollectionService} from '../../../@core/data/trash-collection.service';
-
-import * as _ from 'lodash';
 
 @Component({
   selector: 'ngx-echarts-pie',

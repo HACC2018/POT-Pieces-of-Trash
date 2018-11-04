@@ -1,22 +1,31 @@
 <div class="modal-header">
-  <span> Choose an image </span>
+  <span> WasteAanalysis </span>
   <button class="close" aria-label="Close" (click)="closeModal()">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
 <div class="modal-body">
-  <form #form>
+  <form #form enctype='multipart/form-data'>
     <div class="row">
-       <div class="col-sm-6">
-         <input type="file" name="image">
-       </div>
-       <div class="col-sm-6">
-         <input type="text" name="location" value="Bilger">
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label for="image">Upload an image </label>
+          <input class="form-control-file"  type="file" name="image" id="image" />
         </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label for="location">Location</label>
+          <nb-select #select id="location" [(selected)]="selectedLocation" placeholder="Select a location">
+            <nb-option value="abc" hidden>abc</nb-option>
+            <nb-option *ngFor="let location of locations" [value]="location">{{ location }}</nb-option>
+          </nb-select>
+        </div>
+      </div>
     </div>
   </form>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-md btn-primary" (click)="closeModal()">Save changes</button>
+  <button class="btn btn-md btn-primary" (click)="closeModal()">Cancel</button>
   <button class="btn btn-md btn-primary" (click)="sendForm()">Submit image</button>
 </div>

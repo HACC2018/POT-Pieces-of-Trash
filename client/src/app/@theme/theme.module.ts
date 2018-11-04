@@ -17,7 +17,7 @@ import {
   NbCheckboxModule,
   NbPopoverModule,
   NbContextMenuModule,
-  NbProgressBarModule,
+  NbProgressBarModule, NbSelectModule, NbInputModule,
 } from '@nebular/theme';
 
 import { NbSecurityModule } from '@nebular/security';
@@ -25,13 +25,6 @@ import { NbSecurityModule } from '@nebular/security';
 import {
   FooterComponent,
   HeaderComponent,
-  SearchInputComponent,
-  ThemeSettingsComponent,
-  SwitcherComponent,
-  LayoutDirectionSwitcherComponent,
-  ThemeSwitcherComponent,
-  TinyMCEComponent,
-  ThemeSwitcherListComponent,
 } from './components';
 import {
   CapitalizePipe,
@@ -41,16 +34,14 @@ import {
   NumberWithCommasPipe,
 } from './pipes';
 import {
-  OneColumnLayoutComponent,
   SampleLayoutComponent,
-  ThreeColumnsLayoutComponent,
-  TwoColumnsLayoutComponent,
 } from './layouts';
 import { DEFAULT_THEME } from './styles/theme.default';
 import { COSMIC_THEME } from './styles/theme.cosmic';
 import { CORPORATE_THEME } from './styles/theme.corporate';
-import { UploadImageModal } from './components/header/upload-image/upload-image.component';
+
 import { HttpClientModule } from '@angular/common/http';
+import { UploadImageModalComponent } from './components/header/upload-image-modal/upload-image-modal.component';
 
 const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule];
 
@@ -70,28 +61,19 @@ const NB_MODULES = [
   NgbModule,
   NbSecurityModule, // *nbIsGranted directive,
   NbProgressBarModule,
+  NbSelectModule,
+  NbInputModule,
 ];
 
 const COMPONENTS = [
-  SwitcherComponent,
-  LayoutDirectionSwitcherComponent,
-  ThemeSwitcherComponent,
-  ThemeSwitcherListComponent,
   HeaderComponent,
   FooterComponent,
-  SearchInputComponent,
-  ThemeSettingsComponent,
-  TinyMCEComponent,
-  OneColumnLayoutComponent,
   SampleLayoutComponent,
-  ThreeColumnsLayoutComponent,
-  TwoColumnsLayoutComponent,
-  UploadImageModal,
+  UploadImageModalComponent,
 ];
 
 const ENTRY_COMPONENTS = [
-  ThemeSwitcherListComponent,
-  UploadImageModal
+  UploadImageModalComponent,
 ];
 
 const PIPES = [

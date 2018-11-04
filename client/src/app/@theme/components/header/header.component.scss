@@ -72,26 +72,6 @@
       @include nb-rtl(border, none);
     }
 
-    .header-container /deep/ ngx-theme-switcher .dropdown-toggle {
-      color: nb-theme(color-white);
-      background: transparent;
-    }
-  }
-
-  ngx-layout-direction-switcher {
-    margin: 0 1.5rem;
-  }
-
-  ngx-theme-switcher {
-    margin: nb-theme(layout-padding);
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  @include media-breakpoint-down(xl) {
-    ngx-layout-direction-switcher {
-      display: none;
-    }
   }
 
   .toggle-layout /deep/ a {
@@ -153,60 +133,12 @@
     }
   }
 
-  @include media-breakpoint-down(md) {
-
-    nb-action:not(.toggle-layout) {
-      border: none;
-    }
-
-    .control-item {
-      display: none;
-    }
-
-    .toggle-layout {
-      padding: 0;
-    }
-
-    ngx-layout-direction-switcher {
-      display: none;
-    }
-
-    ngx-theme-switcher {
-      margin: 0 0.5rem;
-    }
-  }
-
-  @include media-breakpoint-down(sm) {
-
-    nb-user /deep/ .user-name {
-      display: none;
-    }
-  }
-
   @include media-breakpoint-down(is) {
 
     .header-container {
       .logo {
         font-size: 1.25rem;
       }
-    }
-
-    .toggle-layout {
-      display: none;
-    }
-
-    ngx-theme-switcher {
-      display: none;
-    }
-
-    nb-action:not(.toggle-layout) {
-      padding: 0;
-    }
-  }
-
-  @include media-breakpoint-down(xs) {
-    .right /deep/ {
-      display: none;
     }
   }
 }

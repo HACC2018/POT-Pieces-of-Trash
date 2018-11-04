@@ -5,4 +5,5 @@
  */
 export const environment = {
   production: true,
+  serverURL: 'https://waste-audit.herokuapp.com'
 };

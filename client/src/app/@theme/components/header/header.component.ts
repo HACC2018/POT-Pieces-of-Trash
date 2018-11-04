@@ -1,9 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NbMenuService, NbSidebarService } from '@nebular/theme';
-import { AnalyticsService } from '../../../@core/utils/analytics.service';
 import { LayoutService } from '../../../@core/data/layout.service';
-import { UploadImageModal } from './upload-image/upload-image.component';
+import { UploadImageModalComponent } from './upload-image-modal/upload-image-modal.component';
 
 @Component({
   selector: 'ngx-header',
@@ -16,7 +15,6 @@ export class HeaderComponent implements OnInit {
 
   constructor(private sidebarService: NbSidebarService,
               private menuService: NbMenuService,
-              private analyticsService: AnalyticsService,
               private layoutService: LayoutService,
               private modalService: NgbModal) {
   }
@@ -41,10 +39,9 @@ export class HeaderComponent implements OnInit {
   }
 
   startSearch() {
-    this.analyticsService.trackEvent('startSearch');
   }
 
   goToUploadImage() {
-    this.modalService.open(UploadImageModal, { size: 'lg', container: 'nb-layout' });
+    this.modalService.open(UploadImageModalComponent, { size: 'lg', container: 'nb-layout' });
   }
 }

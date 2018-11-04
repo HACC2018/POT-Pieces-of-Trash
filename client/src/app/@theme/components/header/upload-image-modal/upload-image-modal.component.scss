@@ -1,3 +1,3 @@
-input[type="file"] {
-    display: none;
+::ng-deep .nb-theme-default .cdk-overlay-container {
+  z-index: 1100;
 }

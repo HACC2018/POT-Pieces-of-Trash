@@ -17,7 +17,7 @@
   "scripts": {
     "ng": "ng",
     "conventional-changelog": "conventional-changelog",
-    "start": "ng serve --poll 1000",
+    "start": "ng serve --poll 1000 --host 0.0.0.0",
     "build": "ng build",
     "build:prod": "npm run build -- --prod --aot",
     "test": "ng test",
@@ -64,6 +64,8 @@
     "intl": "1.2.5",
     "ionicons": "2.0.1",
     "leaflet": "1.2.0",
+    "lodash": "^4.17.11",
+    "moment": "^2.22.2",
     "nebular-icons": "1.0.9",
     "ng2-ckeditor": "1.1.13",
     "ng2-completer": "2.0.8",

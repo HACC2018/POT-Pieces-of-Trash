@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { StateService } from './state.service';
 import { LayoutService } from './layout.service';
 import {TrashQueryService} from './trash-query.service';
+import { UIUtilService } from './ui-uti.servicel';
 
 const SERVICES = [
   StateService,
   LayoutService,
   TrashQueryService,
+  UIUtilService,
 ];
 
 @NgModule({

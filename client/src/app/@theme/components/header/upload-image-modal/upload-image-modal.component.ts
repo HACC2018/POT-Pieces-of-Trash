@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild, AfterViewInit, AfterContentInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewChecked } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TrashQueryService } from '../../../../@core/data/trash-query.service';
+import { UIUtilService } from '../../../../@core/data/ui-uti.servicel';
 
 @Component({
   selector: 'ngx-upload-image',
@@ -18,7 +19,8 @@ export class UploadImageModalComponent implements OnInit, AfterViewChecked {
   locationObserverChecked = false;
   
   constructor(private activeModal: NgbActiveModal, 
-              private trashQueryService: TrashQueryService) {
+              private trashQueryService: TrashQueryService,
+              private uiutil: UIUtilService) {
   }
 
   ngOnInit() {
@@ -43,13 +45,7 @@ export class UploadImageModalComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     if (!this.locationObserverChecked && this.select != undefined && this.select.options != undefined) {
-      if (this.select.options._results.length > 1) {
-        const template = this.select.options._results[0];
-        const observer = template.selectionChange.observers[0];
-        this.select.options._results.forEach(element => {
-          element.selectionChange.observers.push(observer);
-        });
-
+      if (this.uiutil.patchNbSelect(this.select)) {
         this.locationObserverChecked = true;
       }
     }

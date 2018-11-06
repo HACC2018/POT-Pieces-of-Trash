@@ -51,7 +51,6 @@ export class PieChartComponent implements OnInit {
     this.trashSvc.getTrashByLocation(this.selectedLocation.value, this.selectedDate.value)
       .subscribe(data => {
         this.formattedPieChartData = this.formatData(data);
-        console.log(this.formattedPieChartData);
       });
   }
 

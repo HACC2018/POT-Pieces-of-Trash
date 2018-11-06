@@ -2,83 +2,57 @@ import {Component, OnInit, ViewChild, AfterViewChecked} from '@angular/core';
 import * as _ from 'lodash';
 import { TrashQueryService } from '../../../@core/data/trash-query.service';
 import { UIUtilService } from '../../../@core/data/ui-uti.servicel';
-import * as moment from 'moment'
 
 @Component({
   selector: 'ngx-echarts',
   styleUrls: ['./pie-chart.component.scss'],
   templateUrl: './pie-chart.component.html',
 })
-export class PieChartComponent implements OnInit, AfterViewChecked {
+export class PieChartComponent implements OnInit {
 
   locations: string[];
-  dates = []
-
+  dates: number[] = [];
+  locationsByDate = {};
   trashTypes: string[];
   formattedPieChartData: any[];
 
-  dateSelectCorrected = false;
-  locationSelectCorrected = false;
-
-  locationsByDate = {}
-
-  selectedLocation;
-  selectedDate;
-  
-  @ViewChild('locationSelector') locationSelector;
-  @ViewChild('dateSelector') dateSelector;
+  @ViewChild('selectedDate') selectedDate;
+  @ViewChild('selectedLocation') selectedLocation;
 
   constructor(private trashSvc: TrashQueryService,
               private uiutil: UIUtilService) {
   }
 
-  async ngOnInit() {
-    this.trashSvc.getPieChartParam().subscribe(
-      infoList => {
-        _.forEach(infoList, info => {
-          _.forEach(info.locations, location => {
-            if (!(location in this.locationsByDate)) {
-              this.locationsByDate[location] = []
-            }
-            this.locationsByDate[location].push(info.date);
-          })
-        });
-        console.log(this.locationsByDate)
-        this.trashSvc.getLocations()
-          .subscribe(async locations => {
-            this.locations = locations.data.map(location => location.location);
-            console.log(this.locations)
-            if (this.locations.length > 0) {
-              this.setLocation(this.locations[0]);
-            }
-        });
-      }
-    )
+   ngOnInit() {
+    this.dates = [];
+    this.trashSvc.getPieChartParam().subscribe(timeGroups => {
+      _.forEach(timeGroups, (group) => {
+        const date = group['date'];
+        // Collect all dates
+        this.dates.push(date);
+        // Set locations lookup with date as key
+        if (!this.locationsByDate[date]) {
+          this.locationsByDate[date] = group['locations'];
+        }
+      });
+    });
+   }
+
+  setAvailLocations(dateKey: any) {
+    this.locations = this.locationsByDate[dateKey] || [];
   }
 
-  async setLocation(location: string) {
-    console.log('setlocation:' + location)
-    console.log(this.locationSelector);
-    this.locationSelector.setSelection(location);
-    this.dates = this.locationsByDate[location] || [];
-    if (this.dates.length > 0) {
-      this.setDate(this.dates[0]);
-    }
-    this.plotPieChart()
-    
+
+  locationDisplay(location: string): string {
+    return _.capitalize(location);
   }
 
-  async setDate(time: number) {
-    console.log('setting date')
-    this.dateSelector.selectValue(time);
-    this.plotPieChart()
-  }
-
-  async plotPieChart() {
-    if (this.selectedLocation != undefined && this.selectedDate != undefined) {
-      const trash = await this.trashSvc.getTrashByLocation(this.selectedLocation, this.selectedDate).toPromise()
-      this.formattedPieChartData = this.formatData(trash);
-    }
+  getLocationData() {
+    this.trashSvc.getTrashByLocation(this.selectedLocation.value, this.selectedDate.value)
+      .subscribe(data => {
+        this.formattedPieChartData = this.formatData(data);
+        console.log(this.formattedPieChartData);
+      });
   }
 
   formatData(trash): any[] {
@@ -95,24 +69,10 @@ export class PieChartComponent implements OnInit, AfterViewChecked {
     return records;
   }
 
-  ngAfterViewChecked() {
-    if (!this.locationSelectCorrected && this.locationSelector != undefined && this.locationSelector.options != undefined) {
-      if (this.uiutil.patchNbSelect(this.locationSelector)) {
-        this.locationSelector.onChange = this.setLocation
-        this.locationSelectCorrected = true;
-      }
-    }
-
-    if (!this.dateSelectCorrected && this.dateSelector != undefined && this.dateSelector.options != undefined) {
-      if (this.uiutil.patchNbSelect(this.dateSelector)) {
-        this.dateSelector.onChange = this.setDate
-        this.dateSelectCorrected = true;
-      }
-    }
+  epochTimeToDate(epoch): string {
+    const date = new Date(epoch * 1000);
+   // return moment(date.toISOString()).format('MM/DD/YYYY');
+    return (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
   }
 
-  epochTimeToDate(epoch) {
-    const date = new Date(epoch *1000);
-    return  moment(date.toISOString()).format("MM/DD/YYYY")
-  }
 }

@@ -16,7 +16,6 @@ export class PieChartComponent implements OnInit {
   trashTypes: string[];
   formattedPieChartData: any[];
 
-  @ViewChild('selectedDate') selectedDate;
   @ViewChild('selectedLocation') selectedLocation;
 
   constructor(private trashSvc: TrashQueryService,
@@ -40,6 +39,20 @@ export class PieChartComponent implements OnInit {
 
   setAvailLocations(dateKey: any) {
     this.locations = this.locationsByDate[dateKey] || [];
+    const currentLocation = this.selectedLocation.nativeElement.value;
+
+    if (this.selectedLocation.nativeElement.value) {
+      let newLocation = '';
+      if (this.locations.includes(currentLocation)) {
+        newLocation = currentLocation;
+      } else {
+        newLocation = this.locations[0];
+      }
+      
+      if (newLocation) {
+        this.getLocationData(newLocation, dateKey);
+      }
+    }
   }
 
 
@@ -47,8 +60,9 @@ export class PieChartComponent implements OnInit {
     return _.capitalize(location);
   }
 
-  getLocationData() {
-    this.trashSvc.getTrashByLocation(this.selectedLocation.value, this.selectedDate.value)
+  getLocationData(selectedLocation, selectedDate) {
+    console.log(selectedLocation)
+    this.trashSvc.getTrashByLocation(selectedLocation, selectedDate)
       .subscribe(data => {
         this.formattedPieChartData = this.formatData(data);
       });
@@ -56,21 +70,20 @@ export class PieChartComponent implements OnInit {
 
   formatData(trash): any[] {
     const records = [];
-    _.forEach(this.trashTypes, (type) => {
-      if (trash.wastes[type]) {
-        const dataPoint = {
-          value: trash.wastes[type],
-          name: type,
-        };
-        records.push(dataPoint);
-      }
+    this.trashTypes = [];
+    _.forOwn(trash.wastes, (value, key) => {
+      const dataPoint = {
+        value: value,
+        name: _.capitalize(key),
+      };
+      this.trashTypes.push(_.capitalize(key));
+      records.push(dataPoint);
     });
     return records;
   }
 
   epochTimeToDate(epoch): string {
     const date = new Date(epoch * 1000);
-   // return moment(date.toISOString()).format('MM/DD/YYYY');
     return (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
   }
 

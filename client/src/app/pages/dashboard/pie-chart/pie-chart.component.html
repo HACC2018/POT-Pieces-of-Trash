@@ -17,7 +17,7 @@
           </div>
           <div class="col-sm-6">
             <span>Location: </span>
-            <select #selectedLocation (change)="getLocationData()" [disabled]="!selectedDate.value">
+            <select #selectedLocation (change)="getLocationData(selectedLocation.value, selectedDate.value)" [disabled]="!selectedDate.value">
               <option value="" disabled selected>Select a location</option>
               <option *ngFor="let location of locations" [value]="location">{{locationDisplay(location)}}</option>
             </select>

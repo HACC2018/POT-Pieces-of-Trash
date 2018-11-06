@@ -121,7 +121,7 @@ def pie_chart():
             return jsonify({'ok': False, 'message': "'location' is expected in the body of the json"}), 400
 
         if 'timestamp' not in request.get_json():
-            return jsonify({'ok': False, 'message': "'time' is expected in the body of the json"}), 400
+            return jsonify({'ok': False, 'message': "'timestamp' is expected in the body of the json"}), 400
 
         location = str(request.get_json()['location'])
         timestamp = int(request.get_json()['timestamp'])
@@ -275,7 +275,7 @@ def actions_items():
 
 @app.route('/waste-types')
 def get_waste_types():
-    return jsonify({'waste-types:': ['starbucks', 'paper cups', 'straws', 'forks', 'knifes', 'paper', 'cans']}), 200
+    return jsonify({'waste-types': ['starbucks', 'paper cups', 'straws', 'forks', 'knifes', 'paper', 'cans']}), 200
 
 @app.route('/static/<path:path>')
 def serve_static_file(path):

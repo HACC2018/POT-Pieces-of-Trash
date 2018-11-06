@@ -35,12 +35,10 @@ export class TrashPieComponent implements AfterViewInit, OnChanges, OnDestroy {
   render() {
     this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
 
-      const colors = config.variables;
       const echarts: any = config.variables.echarts;
-
       this.options = {
         backgroundColor: echarts.bg,
-        color: [colors.warningLight, colors.infoLight, colors.dangerLight, colors.successLight, colors.primaryLight],
+        color: ['#81d4fa', '#ef9a9a', '#ce93d8', '#9fa8da', '#81c784', '#fff176', '#ffd54f', '#ff8a65', ],
         tooltip: {
           trigger: 'item',
           formatter: '{a} <br/>{b} : {c} ({d}%)',
@@ -85,7 +83,7 @@ export class TrashPieComponent implements AfterViewInit, OnChanges, OnDestroy {
         ],
       };
     });
-  }
+  } 
 
   ngOnDestroy(): void {
     this.themeSubscription.unsubscribe();

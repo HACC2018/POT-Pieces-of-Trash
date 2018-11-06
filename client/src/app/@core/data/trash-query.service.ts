@@ -40,11 +40,45 @@ export class TrashQueryService {
       'location': location,
       'timestamp': time,
     };
-    return this.http.post(environment.serverURL + '/pie', jsonBody)
+    return this.http.post(environment.serverURL + '/pie', jsonBody);
   }
 
   getPieChartParam() {
-    return this.http.get(environment.serverURL + '/pie')
+    return this.http.get(environment.serverURL + '/pie');
+  }
+
+  getTimeOptions() {
+    // TODO have endpoint return list of avail times
+    // return this.http.get(environment.serverURL + '');
+    return of([1541032618, 1541072618]);
+  }
+
+  getTimeseriesData(startTime, endTime, location?: string[]) {
+    // TODO substitude variables in this call
+    const jsonBody = {
+      'lowerbound': 1541032618,
+      'upperbound': 1541072618,
+      'location': ['keller', 'bilger'],
+      'waste-types': 'all'
+    };
+
+    // return this.http.post(environment.serverURL + '/timeseries', jsonBody);
+    return of({
+      'x': [1540980000, 1541066400],
+      'y': [
+        { 'data': [73, 25],
+        'location': 'keller',
+        'waste': 'paper cups' },
+        { 'data': [57, 7],
+          'location': 'keller',
+          'waste': 'straws' },
+        {'data': [0, 26],
+          'location': 'bilger',
+          'waste': 'paper cups' },
+        {'data': [0, 33],
+          'location': 'bilger',
+          'waste': 'straws' }
+          ]});
   }
 
   // Error handler taken from angular.io

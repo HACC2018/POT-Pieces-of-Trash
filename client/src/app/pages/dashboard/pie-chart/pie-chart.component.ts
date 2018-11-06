@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild, AfterViewChecked} from '@angular/core';
 import * as _ from 'lodash';
 import { TrashQueryService } from '../../../@core/data/trash-query.service';
-import { UIUtilService } from '../../../@core/data/ui-uti.servicel';
 
 @Component({
   selector: 'ngx-echarts',
@@ -18,8 +17,7 @@ export class PieChartComponent implements OnInit {
 
   @ViewChild('selectedLocation') selectedLocation;
 
-  constructor(private trashSvc: TrashQueryService,
-              private uiutil: UIUtilService) {
+  constructor(private trashSvc: TrashQueryService) {
   }
 
    ngOnInit() {

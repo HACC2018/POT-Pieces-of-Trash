@@ -13,3 +13,12 @@ def trash_analysis(image_file):
         'paper': random.randint(0, 30),
         'cans': random.randint(0, 30)
     }
+
+class TrashCounter(object):
+    """ Count trash in an image
+
+    This class is responsible for detecting objects placed on top of 
+    a background, drawing bounding boxes that contain those objects,
+    providing an initial classification for each object, and then
+    returning a dictionary with the object count.     
+    """

@@ -16,3 +16,11 @@ pyparsing==2.2.2
 python-dateutil==2.7.3
 six==1.11.0
 Werkzeug==0.14.1
+scikit-image
+scikit-learn
+pretrainedmodels
+numpy
+pillow
+matplotlib
+uuid
+opencv-python

@@ -4,21 +4,9 @@ import numpy as np
 from .segmentation import NormalBackground
 from .detect import ConnectedComponentBoundingBox
 from .classifier import ClassifyWithDeepNetFeatures
-import pylab as pyl
 import PIL
 import os 
 import uuid
-
-def plot_bbox(bound):
-    
-    min_row, min_col, max_row, max_col = bound
-    
-    pyl.plot([min_col, min_col], [min_row, max_row], 'r-')
-    pyl.plot([max_col, max_col], [min_row, max_row], 'r-')
-    pyl.plot([min_col, max_col], [min_row, min_row], 'r-')
-    pyl.plot([min_col, max_col], [max_row, max_row], 'r-')
-
-
 
 class TrashCounter(object):
     """ Count trash in an image
@@ -86,6 +74,8 @@ class TrashCounter(object):
         """ Count the trash in the provided image
         """
         
+        os.makedirs(image_dir, exist_ok=True)
+
         # ========== Read the Image ===========================================
         image = PIL.Image.open(fname).convert("RGB")
         

@@ -3,6 +3,8 @@ import os
 import datetime
 import uuid
 import time
+import trash_counter
+import pickle
 
 import pymongo
 from flask import Flask, request, jsonify, send_from_directory
@@ -28,6 +30,17 @@ db = client[db_name]
 result_collection = db['audit_results']
 location_collection = db['locations']
 
+
+def train_model(analyer, features="data/features.pkl", labels="data/labels.txt"):
+    labels = [line.strip() for line in open(labels, encoding="ascii") if line.strip()]
+    features = pickle.load(open(features, "rb"))
+    
+    analyzer.classifier.fit(features, labels)    
+
+
+analyzer = trash_counter.TrashCounter()
+train_model(analyzer)
+
 @app.route('/')
 def hello():
     return "Hello World"
@@ -42,6 +55,16 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in {'jpg', 'jpeg', 'png'}
 
+def classify_waste(image_path):
+    results = analyzer(image_path, image_dir='static/image_chips')
+    labels_count = {}
+    for result in results:
+        if result['label'] not in labels_count:
+            labels_count[result['label']] = 0
+        labels_count[result['label']] += 1
+
+    return {'wastes': labels_count, 'image_chips': results}
+
 
 @app.route("/analyze", methods=['POST'])
 def analyze_image():
@@ -52,8 +75,13 @@ def analyze_image():
     if image.filename == '':
         return jsonify({'ok': False, 'message': 'No selected file'}), 400
 
-    if request.form['location'] == '':
+    if 'location' not in request.form or request.form['location'] == '':
         return jsonify({'ok': False, 'message': 'The field "location" is not filled'}), 400
+
+    if 'timestamp' in request.form:
+        timestamp = int(request.form['timestamp'])
+    else:
+        timestamp = int(time.mktime(datetime.datetime.now().timetuple()))
 
     if image and allowed_file(image.filename):
         filename = secure_filename(image.filename)
@@ -65,12 +93,13 @@ def analyze_image():
             os.makedirs(app.config['UPLOAD_FOLDER'])
 
         image.save(path)
-        wastes = trash_analysis(path)
+        wastes = classify_waste(path)
 
         result = {'location': request.form['location'],
-                  'timestamp': int(time.mktime(datetime.datetime.now().timetuple())),
+                  'timestamp': timestamp,
                   'image': path,
-                  'wastes': wastes}
+                  'wastes': wastes['wastes'],
+                  'image_chips': wastes['image_chips']}
 
         result_collection.insert_one(result)
         result['id'] = str(result['_id'])
@@ -121,12 +150,12 @@ def pie_chart():
             return jsonify({'ok': False, 'message': "'location' is expected in the body of the json"}), 400
 
         if 'timestamp' not in request.get_json():
-            return jsonify({'ok': False, 'message': "'timestamp' is expected in the body of the json"}), 400
+            return jsonify({'ok': False, 'message': "'time' is expected in the body of the json"}), 400
 
         location = str(request.get_json()['location'])
         timestamp = int(request.get_json()['timestamp'])
         lowerbound_time = get_lowerbound_timestamp(timestamp)
-        upperbound_time = time.mktime((datetime.date.fromtimestamp(timestamp) + datetime.timedelta(days=1)).timetuple())
+        upperbound_time = get_lowerbound_timestamp(timestamp + 86400)
 
         entries = query_data(lowerbound_time, upperbound_time, location)
         wastes = {}
@@ -176,7 +205,7 @@ def time_series():
     requested_locations = request_json['location']
 
     lowerbound = get_lowerbound_timestamp(int(lowerbound))
-    upperbound = time.mktime((datetime.date.fromtimestamp(int(upperbound)) + datetime.timedelta(days=1)).timetuple())
+    upperbound = get_lowerbound_timestamp(int(lowerbound) + 86400)
 
     entries = query_data(lowerbound, upperbound, requested_locations)
 
@@ -275,7 +304,7 @@ def actions_items():
 
 @app.route('/waste-types')
 def get_waste_types():
-    return jsonify({'waste-types': ['starbucks', 'paper cups', 'straws', 'forks', 'knifes', 'paper', 'cans']}), 200
+    return jsonify({'waste-types:': ['starbucks', 'paper cups', 'straws', 'forks', 'knifes', 'paper', 'cans']}), 200
 
 @app.route('/static/<path:path>')
 def serve_static_file(path):

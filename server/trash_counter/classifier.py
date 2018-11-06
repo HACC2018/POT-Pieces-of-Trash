@@ -6,19 +6,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.exceptions import NotFittedError
 import numpy as np
-import pylab as pyl
-
-
-def plot_bbox(bound):
-    
-    min_row, min_col, max_row, max_col = bound
-    
-    pyl.plot([min_col, min_col], [min_row, max_row], 'r-')
-    pyl.plot([max_col, max_col], [min_row, max_row], 'r-')
-    pyl.plot([min_col, max_col], [min_row, min_row], 'r-')
-    pyl.plot([min_col, max_col], [max_row, max_row], 'r-')
-
-
 
 class ClassifyWithDeepNetFeatures(object):
     """ Classify using the *features* from a deep net

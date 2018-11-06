@@ -33,7 +33,7 @@ export class TrashLineComponent implements AfterViewInit, OnDestroy {
         },
         legend: {
           left: 'left',
-          data: ['Line 1', 'Line 2', 'Line 3'],
+          data: this.legendData,
           textStyle: {
             color: echarts.textColor,
           },
@@ -83,7 +83,19 @@ export class TrashLineComponent implements AfterViewInit, OnDestroy {
           bottom: '3%',
           containLabel: true,
         },
-        series: this.seriesData,
+        series: [
+          {
+            name: 'paper cups',
+            type: 'line',
+            data: [73, 25],
+          },
+          {
+            name: 'straws',
+            type: 'line',
+            data: [57, 7],
+          },
+
+        ],
       };
     });
   }

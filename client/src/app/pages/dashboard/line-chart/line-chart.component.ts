@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, AfterViewChecked, Input} from '@angular/core';
+import {Component, OnInit, ViewChild, Input} from '@angular/core';
 import * as _ from 'lodash';
 import { TrashQueryService } from '../../../@core/data/trash-query.service';
 import { UIUtilService } from '../../../@core/data/ui-uti.servicel';
@@ -38,15 +38,13 @@ export class LineChartComponent implements OnInit {
     this.trashSvc.getTimeOptions()
       .subscribe(times => {
         this.dates = times;
-      })
-
+      });
   }
 
   getData() {
     this.trashSvc.getTimeseriesData(this.selectedStartDate.nativeElement.value,
       this.selectedEndDate.nativeElement.value)
       .subscribe(data => {
-        console.log(data);
         this.timeData = data.x;
         this.currSeriesData = data.y;
         this.formatData();
@@ -110,7 +108,7 @@ export class LineChartComponent implements OnInit {
   }
 
   filterData(seriesData): any[] {
-    let finalData = [];
+    const finalData = [];
     let chartData = seriesData;
     if (this.trashTypeFilter.nativeElement.value !== 'any') {
       chartData = _.filter(chartData, (d) => {
@@ -135,8 +133,6 @@ export class LineChartComponent implements OnInit {
       }, []);
 
       finalData.push(this.formatChartData(dataGroup[0].waste, result));
-
-      console.log(finalData);
 
     });
 

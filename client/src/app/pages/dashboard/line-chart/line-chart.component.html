@@ -41,7 +41,7 @@
           <div class="col-sm-6">
             <span>Trash Type: </span>
             <select #trashTypeFilter (change)="changeCompare()">
-              <option value="any" disabled selected>Any</option>
+              <option value="any" selected>Any</option>
               <option *ngFor="let option of availTypes" [value]="option">{{option}}</option>
             </select>
           </div>

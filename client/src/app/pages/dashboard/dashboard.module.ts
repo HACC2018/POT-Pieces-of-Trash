@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { NgxEchartsModule } from 'ngx-echarts';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 import { ThemeModule } from '../../@theme/theme.module';
 import { DashboardComponent } from './dashboard.component';
@@ -14,6 +15,7 @@ import {LineChartComponent} from './line-chart/line-chart.component';
   imports: [
     ThemeModule,
     NgxEchartsModule,
+    NgMultiSelectDropDownModule.forRoot(),
   ],
   declarations: [
     DashboardComponent,

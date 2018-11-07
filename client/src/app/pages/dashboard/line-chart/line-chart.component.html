@@ -29,23 +29,21 @@
     <div class="row">
       <div class="col-sm-6">
         <span>Location: </span>
-        <select #locationFilter (change)="selectNewLocation()">
-          <option value="all" selected>All</option>
-          <option *ngFor="let option of availLocations" [value]="option">{{formatLabel(option)}}</option>
-        </select>
+        <ng-multiselect-dropdown [placeholder]="'Select locations'" [data]="locationDropdownList" [(ngModel)]="selectedLocations" [settings]="dropdownSettings"
+          (onSelect)="onFilterChanged()" (onSelectAll)="onLocationSelectAll()" (onDeSelectAll)="onLocationDeSelectAll()" (onDeSelect)="onFilterChanged()">
+        </ng-multiselect-dropdown>
       </div>
       <div class="col-sm-6">
         <span>Trash Type: </span>
-        <select #trashTypeFilter (change)="selectNewLocation()">
-          <option value="all" selected>All</option>
-          <option *ngFor="let option of availTypes" [value]="option">{{formatLabel(option)}}</option>
-        </select>
+        <ng-multiselect-dropdown [placeholder]="'Select wastes'" [data]="wasteDropdownList" [(ngModel)]="selectedWastes" [settings]="dropdownSettings"
+          (onSelect)="onFilterChanged()" (onSelectAll)="onWasteSelectAll()" (onDeSelectAll)="onWasteDeSelectAll()" (onDeSelect)="onFilterChanged()">
+        </ng-multiselect-dropdown>
       </div>
     </div>
 
   </nb-card-header>
   <nb-card-body>
-    <ngx-echarts-line *ngIf="formattedSeriesData && timeData && availTypes" [seriesData]="formattedSeriesData" [timeData]="timeData"
+    <ngx-echarts-line *ngIf="formattedSeriesData && timeData && legends" [seriesData]="formattedSeriesData" [timeData]="timeData"
       [legendData]="legends"></ngx-echarts-line>
   </nb-card-body>
 </nb-card>

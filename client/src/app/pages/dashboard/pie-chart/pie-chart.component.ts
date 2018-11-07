@@ -9,7 +9,7 @@ import { TrashQueryService } from '../../../@core/data/trash-query.service';
 })
 export class PieChartComponent implements OnInit {
 
-  @Input() trashTypes: string[];
+  trashTypes: string[];
 
   locations: string[];
   dates: number[] = [];

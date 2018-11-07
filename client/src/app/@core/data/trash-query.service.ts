@@ -54,37 +54,20 @@ export class TrashQueryService {
   }
 
   getTimeOptions() {
-    // TODO have endpoint return list of avail times
-    // return this.http.get(environment.serverURL + '');
-    return of([1541032618, 1541072618]);
+    return this.http.get(environment.serverURL + '/timeseries');
   }
 
-  getTimeseriesData(startTime, endTime, location?: string[]) {
+  getTimeseriesData(startTime, endTime, locations: string[]) {
     // TODO substitude variables in this call
     const jsonBody = {
-      'lowerbound': 1541032618,
-      'upperbound': 1541072618,
-      'location': ['keller', 'bilger'],
+      'lowerbound': startTime,
+      'upperbound': endTime,
+      'location': locations,
       'waste-types': 'all'
     };
 
     // return this.http.post(environment.serverURL + '/timeseries', jsonBody);
-    return of({
-      'x': [1540980000, 1541066400],
-      'y': [
-        { 'data': [73, 25],
-        'location': 'keller',
-        'waste': 'paper cups' },
-        { 'data': [57, 7],
-          'location': 'keller',
-          'waste': 'straws' },
-        {'data': [0, 26],
-          'location': 'bilger',
-          'waste': 'paper cups' },
-        {'data': [0, 33],
-          'location': 'bilger',
-          'waste': 'straws' }
-          ]});
+    return this.http.post<any>(environment.serverURL + '/timeseries', jsonBody);
   }
 
   // Error handler taken from angular.io

@@ -9,9 +9,7 @@ import { UIUtilService } from '../../../@core/data/ui-uti.servicel';
 })
 export class LineChartComponent implements OnInit {
 
-  @Input() trashTypes: string[];
-
-  dates = [];
+  dates:any = [];
   availLocations = [];
   availTypes = [];
 
@@ -42,8 +40,7 @@ export class LineChartComponent implements OnInit {
   }
 
   getData() {
-    this.trashSvc.getTimeseriesData(this.selectedStartDate.nativeElement.value,
-      this.selectedEndDate.nativeElement.value)
+    this.trashSvc.getTimeseriesData(this.selectedStartDate.nativeElement.value, this.selectedEndDate.nativeElement.value)
       .subscribe(data => {
         this.timeData = _.map(data.x, (x) => this.epochTimeToDate(x));
         this.currSeriesData = data.y;

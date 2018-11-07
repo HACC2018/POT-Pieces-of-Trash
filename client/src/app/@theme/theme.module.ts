@@ -42,6 +42,7 @@ import { CORPORATE_THEME } from './styles/theme.corporate';
 
 import { HttpClientModule } from '@angular/common/http';
 import { UploadImageModalComponent } from './components/header/upload-image-modal/upload-image-modal.component';
+import {ToasterModule} from 'angular2-toaster';
 
 const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule];
 
@@ -96,7 +97,7 @@ const NB_THEME_PROVIDERS = [
 ];
 
 @NgModule({
-  imports: [...BASE_MODULES, ...NB_MODULES],
+  imports: [...BASE_MODULES, ...NB_MODULES, ToasterModule.forRoot()],
   exports: [...BASE_MODULES, ...NB_MODULES, ...COMPONENTS, ...PIPES],
   declarations: [...COMPONENTS, ...PIPES],
   entryComponents: [...ENTRY_COMPONENTS],

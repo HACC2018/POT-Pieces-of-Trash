@@ -154,4 +154,13 @@
       display: none;
     }
   }
+
+  /* stylelint-disable */
+  toaster-container /deep/ {
+    position: absolute;
+    right: 0;
+    #toast-container .toast-close-button {
+      right: 0;
+    }
+  }
 }

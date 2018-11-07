@@ -141,4 +141,13 @@
       }
     }
   }
+  /* stylelint-disable */
+  toaster-container /deep/ {
+    position: absolute;
+    right: 50%;
+    #toast-container .toast-close-button {
+      right: 0;
+    }
+  }
+
 }

@@ -45,7 +45,7 @@ export class LineChartComponent implements OnInit {
     this.trashSvc.getTimeseriesData(this.selectedStartDate.nativeElement.value,
       this.selectedEndDate.nativeElement.value)
       .subscribe(data => {
-        this.timeData = data.x;
+        this.timeData = _.map(data.x, (x) => this.epochTimeToDate(x));
         this.currSeriesData = data.y;
         this.formatData();
       });

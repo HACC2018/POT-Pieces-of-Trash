@@ -29,16 +29,16 @@
     <div class="row">
       <div class="col-sm-6">
         <span>Location: </span>
-        <select #locationFilter (change)="changeCompare()">
-          <option value="any" selected>All</option>
-          <option *ngFor="let option of availLocations" [value]="option">{{option}}</option>
+        <select #locationFilter (change)="selectNewLocation()">
+          <option value="all" selected>All</option>
+          <option *ngFor="let option of availLocations" [value]="option">{{formatLabel(option)}}</option>
         </select>
       </div>
       <div class="col-sm-6">
         <span>Trash Type: </span>
-        <select #trashTypeFilter (change)="changeCompare()">
-          <option value="any" selected>Any</option>
-          <option *ngFor="let option of availTypes" [value]="option">{{option}}</option>
+        <select #trashTypeFilter (change)="selectNewLocation()">
+          <option value="all" selected>All</option>
+          <option *ngFor="let option of availTypes" [value]="option">{{formatLabel(option)}}</option>
         </select>
       </div>
     </div>
@@ -46,6 +46,6 @@
   </nb-card-header>
   <nb-card-body>
     <ngx-echarts-line *ngIf="formattedSeriesData && timeData && availTypes" [seriesData]="formattedSeriesData" [timeData]="timeData"
-      [legendData]="availTypes"></ngx-echarts-line>
+      [legendData]="legends"></ngx-echarts-line>
   </nb-card-body>
 </nb-card>

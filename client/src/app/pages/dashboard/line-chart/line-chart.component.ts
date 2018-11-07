@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, Input} from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import * as _ from 'lodash';
 import { TrashQueryService } from '../../../@core/data/trash-query.service';
 import { UIUtilService } from '../../../@core/data/ui-uti.servicel';
@@ -9,7 +9,7 @@ import { UIUtilService } from '../../../@core/data/ui-uti.servicel';
 })
 export class LineChartComponent implements OnInit {
 
-  dates:any = [];
+  dates: any = [];
   availLocations = [];
   availTypes = [];
 
@@ -21,15 +21,15 @@ export class LineChartComponent implements OnInit {
   currSeriesData: any;
   formattedSeriesData: any;
   timeData: any[];
+  legends: string[];
 
   @ViewChild('selectedStartDate') selectedStartDate;
   @ViewChild('selectedEndDate') selectedEndDate;
-  @ViewChild('compareBy') compareBy;
   @ViewChild('trashTypeFilter') trashTypeFilter;
   @ViewChild('locationFilter') locationFilter;
 
   constructor(private trashSvc: TrashQueryService,
-              private uiutil: UIUtilService) {
+    private uiutil: UIUtilService) {
   }
 
   ngOnInit() {
@@ -44,6 +44,8 @@ export class LineChartComponent implements OnInit {
       .subscribe(data => {
         this.timeData = _.map(data.x, (x) => this.epochTimeToDate(x));
         this.currSeriesData = data.y;
+        this.availLocations = data['avail-locations'];
+        this.availTypes = data['avail-wastes'];
         this.formatData();
       });
   }
@@ -69,26 +71,34 @@ export class LineChartComponent implements OnInit {
   }
 
   formatData() {
-    const locations = [];
-    const types = [];
-
-    // Get locations from data
-    _.forEach(this.currSeriesData, (dataPoint) => {
-      if (!locations.includes(dataPoint.location)) {
-        locations.push(dataPoint.location);
-      }
-      // Get types of Trash from data
-      if (!types.includes(dataPoint.waste)) {
-        types.push(dataPoint.waste);
-      }
-    });
-
-    this.availTypes = types;
-    this.availLocations = locations;
-
+    console.log(this.currSeriesData);
     this.formattedSeriesData = this.filterData(this.currSeriesData);
-
+    console.log(this.formattedSeriesData);
   }
+
+  formatLabel(label) {
+    return _.capitalize(label)
+  }
+
+  selectNewLocation() {
+    const start = this.selectedStartDate.nativeElement.value;
+    const end = this.selectedEndDate.nativeElement.value;
+    const location = this.locationFilter.nativeElement.value;
+    const waste = this.trashTypeFilter.nativeElement.value;
+
+    this.trashSvc.filterTimeSeriesData(start, end, [location], [waste]).subscribe(
+      data => {
+        this.timeData = _.map(data.x, (x) => this.epochTimeToDate(x));
+        this.currSeriesData = data.y;
+        this.availTypes = data['avail-wastes'];
+        this.formatData();
+      }
+    )
+
+    this.prevValues.start = start;
+    this.prevValues.end = end;
+  }
+
 
 
   epochTimeToDate(epoch): string {
@@ -103,35 +113,85 @@ export class LineChartComponent implements OnInit {
       data: data,
     };
   }
+/*
 
+[
+  {
+    "data": [
+      393,
+      340,
+      335,
+      204,
+      21
+    ],
+    "location": "All",
+    "waste": "all"
+  }
+]
+
+
+
+
+ *[
+  {
+    "name": "all",
+    "type": "line",
+    "data": [
+      393,
+      340,
+      335,
+      204,
+      21
+    ]
+  }
+] 
+ * 
+ */
   filterData(seriesData): any[] {
+    this.legends = [];
     const finalData = [];
-    let chartData = seriesData;
-    if (this.trashTypeFilter.nativeElement.value !== 'any') {
-      chartData = _.filter(chartData, (d) => {
-        return d.waste === this.trashTypeFilter.nativeElement.value;
-      });
-    }
+    // let chartData = seriesData;
+    // if (this.trashTypeFilter.nativeElement.value !== 'any') {
+    //   chartData = _.filter(chartData, (d) => {
+    //     return d.waste === this.trashTypeFilter.nativeElement.value;
+    //   });
+    // }
 
-    if (this.locationFilter.nativeElement.value !== 'any') {
-      chartData = _.filter(chartData, (d) => {
-        return d.location === this.locationFilter.nativeElement.value;
-      });
-    }
+    // if (this.locationFilter.nativeElement.value !== 'any') {
+    //   chartData = _.filter(chartData, (d) => {
+    //     return d.location === this.locationFilter.nativeElement.value;
+    //   });
+    // }
 
-    chartData = _.groupBy(chartData, 'waste');
-    _.forEach(chartData, (dataGroup) => {
+    // chartData = _.groupBy(chartData, 'waste');
+    // _.forEach(chartData, (dataGroup) => {
 
-      const result = dataGroup.reduce(function (res, data) {
-        (data.data).forEach(function (b, i) {
-          res[i] = (res[i] || 0) + b;
-        });
-        return res;
-      }, []);
+    //   const result = dataGroup.reduce(function (res, data) {
+    //     (data.data).forEach(function (b, i) {
+    //       res[i] = (res[i] || 0) + b;
+    //     });
+    //     return res;
+    //   }, []);
 
-      finalData.push(this.formatChartData(dataGroup[0].waste, result));
+    //   finalData.push(this.formatChartData(dataGroup[0].waste, result));
 
-    });
+    // });
+    _.forEach(seriesData, (series) => {
+      let name = '';
+      if (series.waste.toLowerCase() == 'all') {
+        name += 'All wastes';
+      } else {
+        name += _.capitalize(series.waste);
+      }
+
+      if (series.location.toLowerCase() == 'all') {
+        name += ' at every location';
+      } else {
+        name += ' at ' + _.capitalize(series.location);
+      }
+      this.legends.push(name);
+      finalData.push(this.formatChartData(name, series.data));
+    })    
 
     return finalData;
 

@@ -57,13 +57,25 @@ export class TrashQueryService {
     return this.http.get(environment.serverURL + '/timeseries');
   }
 
-  getTimeseriesData(startTime, endTime, locations: string[]) {
+  getTimeseriesData(startTime, endTime) {
     // TODO substitude variables in this call
     const jsonBody = {
       'lowerbound': startTime,
       'upperbound': endTime,
-      'location': locations,
+      'location': 'all',
       'waste-types': 'all'
+    };
+
+    // return this.http.post(environment.serverURL + '/timeseries', jsonBody);
+    return this.http.post<any>(environment.serverURL + '/timeseries', jsonBody);
+  }
+
+  filterTimeSeriesData(startTime, endTime, locations, wastes) {
+    const jsonBody = {
+      'lowerbound': startTime,
+      'upperbound': endTime,
+      'location': locations,
+      'waste-types': wastes
     };
 
     // return this.http.post(environment.serverURL + '/timeseries', jsonBody);

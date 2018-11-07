@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 
 import { NgxEchartsModule } from 'ngx-echarts';
-import { AngularMultiSelectModule } from 'angular2-multiselect-checkbox-dropdown/angular2-multiselect-dropdown';
 
 import { ThemeModule } from '../../@theme/theme.module';
 import { DashboardComponent } from './dashboard.component';
@@ -15,7 +14,6 @@ import {LineChartComponent} from './line-chart/line-chart.component';
   imports: [
     ThemeModule,
     NgxEchartsModule,
-    AngularMultiSelectModule,
   ],
   declarations: [
     DashboardComponent,

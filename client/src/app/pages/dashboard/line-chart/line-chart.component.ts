@@ -192,6 +192,7 @@ export class LineChartComponent implements OnInit {
       data: data,
       stack: 'Total amount',
       areaStyle: { normal: { opacity: echarts.areaOpacity } },
+      connectNulls: true
     };
   }
   /*

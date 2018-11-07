@@ -137,7 +137,8 @@ def query_data(from_time, to_time, location):
         if location.lower() != 'all':
             query_filter = {**query_filter, **{'location': location}}
     elif isinstance(location, list):
-        query_filter = {**query_filter, **{'location': {'$in': location}}}
+        if 'all' not in set(i.lower() for i in location):
+            query_filter = {**query_filter, **{'location': {'$in': location}}}
 
     entries = result_collection.find(query_filter, {'_id': False}).sort('timestamp', pymongo.ASCENDING)
     return entries
@@ -188,96 +189,116 @@ def pie_chart():
         return jsonify(available_dates), 200
 
 
-@app.route('/timeseries', methods=['POST'])
+@app.route('/timeseries', methods=['GET', 'POST'])
 def time_series():
-    request_json = request.get_json()
+    if request.method == 'POST':
+        request_json = request.get_json()
 
-    if 'lowerbound' not in request_json:
-        return jsonify({'ok': False, 'message': "'lowerbound' is expected in the body of the json"}), 400
+        if 'lowerbound' not in request_json:
+            return jsonify({'ok': False, 'message': "'lowerbound' is expected in the body of the json"}), 400
 
-    if 'upperbound' not in request_json:
-        return jsonify({'ok': False, 'message': "'upperbound' is expected in the body of the json"}), 400
+        if 'upperbound' not in request_json:
+            return jsonify({'ok': False, 'message': "'upperbound' is expected in the body of the json"}), 400
 
-    if 'waste-types' not in request_json:
-        return jsonify({'ok': False, 'message': "'waste-type' is expected in the body of the json"}), 400
+        if 'waste-types' not in request_json:
+            return jsonify({'ok': False, 'message': "'waste-type' is expected in the body of the json"}), 400
 
-    if 'location' not in request_json:
-        return jsonify({'ok': False, 'message': "'location' is expected in the body of the json"}), 400
+        if 'location' not in request_json:
+            return jsonify({'ok': False, 'message': "'location' is expected in the body of the json"}), 400
 
-    lowerbound = request_json['lowerbound']
-    upperbound = request_json['upperbound']
-    waste_types = request_json['waste-types']
-    requested_locations = request_json['location']
+        lowerbound = request_json['lowerbound']
+        upperbound = request_json['upperbound']
+        waste_types = request_json['waste-types']
+        requested_locations = request_json['location']
 
-    lowerbound = get_lowerbound_timestamp(int(lowerbound))
-    upperbound = get_lowerbound_timestamp(int(upperbound) + 86400)
+        lowerbound = get_lowerbound_timestamp(int(lowerbound))
+        upperbound = get_lowerbound_timestamp(int(upperbound) + 86400)
 
-    entries = query_data(lowerbound, upperbound, requested_locations)
+        entries = query_data(lowerbound, upperbound, requested_locations)
 
-    is_all_locations = False
-    if isinstance(requested_locations, str):
-        if requested_locations.lower() == 'all':
-            is_all_locations = True
-        requested_locations = {requested_locations}
-    else:
-        requested_locations = set(requested_locations)
-
-    is_all_wastes = False
-    if isinstance(waste_types, str):
-        if waste_types.lower() == 'all':
-            is_all_wastes = True
-            waste_types = {waste_types}
-    else:
-        waste_types = set(waste_types)
-
-    x = set()
-    entries = list(entries)
-    for entry in entries:
-        lowerbound = get_lowerbound_timestamp(entry['timestamp'])
-        if lowerbound not in x:
-            x.add(lowerbound)
-
-    x = list(x)
-    x.sort()
-
-    y = []
-    unique_records = {}
-
-    result = {'x': x, 'y': y}
-    for entry in entries:
-        if not is_all_locations:
-            if entry['location'] not in requested_locations:
-                continue
-            else:
-                entry_location = entry['location']
+        is_all_locations = False
+        if isinstance(requested_locations, str):
+            if requested_locations.lower() == 'all':
+                is_all_locations = True
+            requested_locations = {requested_locations}
         else:
-            entry_location = 'All'
+            if 'all' in set(i.lower() for i in requested_locations):
+                is_all_locations = True
+            else:
+                requested_locations = set(requested_locations)
 
-        for entry_waste in entry['wastes']:
-            if not is_all_wastes:
-                if entry_waste not in waste_types:
+        is_all_wastes = False
+        if isinstance(waste_types, str):
+            if waste_types.lower() == 'all':
+                is_all_wastes = True
+            waste_types = {waste_types}
+        else:
+            if 'all' in set(i.lower() for i in waste_types):
+                is_all_wastes = True
+            else:
+                waste_types = set(waste_types)
+
+        x = set()
+        entries = list(entries)
+        for entry in entries:
+            lowerbound = get_lowerbound_timestamp(entry['timestamp'])
+            if lowerbound not in x:
+                x.add(lowerbound)
+
+        x = list(x)
+        x.sort()
+
+        y = []
+        unique_records = {}
+
+        result = {'x': x, 'y': y, 'avail-wastes': set(), 'avail-locations': set()}
+        for entry in entries:
+            result['avail-locations'].add(entry['location'])
+            if not is_all_locations:
+                if entry['location'] not in requested_locations:
                     continue
                 else:
-                    waste = entry_waste
+                    entry_location = entry['location']
             else:
-                waste = 'all'
+                entry_location = 'All'
 
-            unique_record = (waste, entry_location)
-            if unique_record not in unique_records:
-                unique_records[unique_record] = len(y)
-                y.append({'waste': waste, 'data': [''] * len(x), 'location': entry_location})
+            for entry_waste in entry['wastes']:
+                result['avail-wastes'].add(entry_waste)
+                if not is_all_wastes:
+                    if entry_waste not in waste_types:
+                        continue
+                    else:
+                        waste = entry_waste
+                else:
+                    waste = 'all'
 
-            waste_data = y[unique_records[unique_record]]['data']
-            lowerbound = get_lowerbound_timestamp(entry['timestamp'])
-            x_index = x.index(lowerbound)
+                unique_record = (waste, entry_location)
+                if unique_record not in unique_records:
+                    unique_records[unique_record] = len(y)
+                    y.append({'waste': waste, 'data': [''] * len(x), 'location': entry_location})
 
-            saved_amount = waste_data[x_index]
-            if saved_amount != '':
-                waste_data[x_index] = entry['wastes'][entry_waste] + saved_amount
-            else:
-                waste_data[x_index] = entry['wastes'][entry_waste]
+                waste_data = y[unique_records[unique_record]]['data']
+                lowerbound = get_lowerbound_timestamp(entry['timestamp'])
+                x_index = x.index(lowerbound)
 
-    return jsonify(result), 200
+                saved_amount = waste_data[x_index]
+                if saved_amount != '':
+                    waste_data[x_index] = entry['wastes'][entry_waste] + saved_amount
+                else:
+                    waste_data[x_index] = entry['wastes'][entry_waste]
+
+        result['avail-locations'] = list(result['avail-locations'])
+        result['avail-wastes'] = list(result['avail-wastes'])
+        return jsonify(result), 200
+
+    elif request.method == 'GET':
+        all_data = query_data(0, int(time.mktime(datetime.datetime.now().timetuple())) + 60*60*24, 'all')
+        dates = set()
+        for entry in all_data:
+            dates.add(get_lowerbound_timestamp(entry['timestamp']))
+        dates = list(dates)
+        dates.sort()
+        return jsonify(dates), 200
 
 
 @app.route('/locations', methods=['GET', 'POST'])

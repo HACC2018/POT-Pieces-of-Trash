@@ -7,8 +7,8 @@ export const MENU_ITEMS: NbMenuItem[] = [
     link: '/pages/dashboard',
     home: true,
   }, {
-    title: 'Actions',
-    icon: 'nb-home',
+    title: 'Locations',
+    icon: 'nb-location',
     link: '/pages/actions',
     home: true,
   }

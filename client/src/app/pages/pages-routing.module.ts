@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { PagesComponent } from './pages.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { ActionsComponent } from './actions/actions.component';
 
 const routes: Routes = [{
   path: '',
@@ -11,6 +12,9 @@ const routes: Routes = [{
   children: [{
     path: 'dashboard',
     component: DashboardComponent,
+  },{
+    path: 'actions',
+    component: ActionsComponent,
   },{
     path: '',
     redirectTo: 'dashboard',

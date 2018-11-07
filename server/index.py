@@ -3,6 +3,9 @@ import os
 import datetime
 import uuid
 import time
+
+from bson import ObjectId
+
 import trash_counter
 import pickle
 
@@ -29,13 +32,13 @@ else:
 db = client[db_name]
 result_collection = db['audit_results']
 location_collection = db['locations']
+action_collection = db['actions']
 
 
 def train_model(analyer, features="data/features.pkl", labels="data/labels.txt"):
     labels = [line.strip() for line in open(labels, encoding="ascii") if line.strip()]
     features = pickle.load(open(features, "rb"))
-    
-    analyzer.classifier.fit(features, labels)    
+    analyer.classifier.fit(features, labels)
 
 
 analyzer = trash_counter.TrashCounter()
@@ -54,6 +57,7 @@ def ping():
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in {'jpg', 'jpeg', 'png'}
+
 
 def classify_waste(image_path):
     results = analyzer(image_path, image_dir='static/image_chips')
@@ -167,7 +171,8 @@ def pie_chart():
 
         return jsonify({'wastes': wastes, 'timestamp': lowerbound_time, 'location': location, 'unit': 'lb'}), 200
     else:
-        all_entries = result_collection.find({}, projection={'timestamp': True, 'location': True})
+        all_entries = result_collection.find({}, projection={'timestamp': True, 'location': True}).sort('timestamp',
+                                                                                                        pymongo.DESCENDING)
         options = {}
         for entry in all_entries:
             timestamp = entry['timestamp']
@@ -205,7 +210,7 @@ def time_series():
     requested_locations = request_json['location']
 
     lowerbound = get_lowerbound_timestamp(int(lowerbound))
-    upperbound = get_lowerbound_timestamp(int(lowerbound) + 86400)
+    upperbound = get_lowerbound_timestamp(int(upperbound) + 86400)
 
     entries = query_data(lowerbound, upperbound, requested_locations)
 
@@ -286,25 +291,66 @@ def locations():
             if location_collection.find(document).count() == 0:
                 location_collection.insert_one(dict(document))
 
+            if action_collection.find(document).count() == 0:
+                action_document = {'location': location, 'action': 'Start auditing waste.',
+                                   'timestamp': int(time.mktime(datetime.datetime.now().timetuple())),
+                                   'completed': False}
+                action_collection.insert_one(dict(action_document))
+
             return jsonify({'ok': True, 'data': document}), 200
     elif request.method == 'GET':
         return jsonify({'data': list(location_collection.find({}, {'_id': False}))}), 200
 
 
-@app.route('/actions', methods=['GET', 'POST'])
+@app.route('/actions', methods=['GET', 'POST', 'PUT'])
 def actions_items():
     if request.method == 'GET':
-        location_query = {}
-        if 'location' in request.args:
-            location_query = {'location': request.args.get('location')}
+        actions = action_collection.find().sort('timestamp', pymongo.DESCENDING)
+        location_actions = {}
+        for action in actions:
+            if action['location'] not in location_actions:
+                location_actions[action['location']] = []
+            location_actions[action['location']].append(
+                {'action': action['action'], 'timestamp': action['timestamp'], 'completed': action['completed'],
+                 'id': str(action['_id'])})
 
+        return jsonify(**location_actions)
     elif request.method == 'POST':
-        pass
+        if 'location' not in request.get_json():
+            return jsonify({'ok': False, 'message': "'location' is expected in the body of the json"}), 400
+
+        if 'action' not in request.get_json():
+            return jsonify({'ok': False, 'message': "'action' is expected in the body of the json"}), 400
+
+        location = request.get_json()['location']
+        action = request.get_json()['action']
+        if 'timestamp' in request.get_json():
+            timestamp = int(request.get_json()['timestamp'])
+        else:
+            timestamp = int(time.mktime(datetime.datetime.now().timetuple()))
+
+        document = {'location': location, 'action': action, 'timestamp': timestamp, 'completed': False}
+        action_collection.insert_one(document)
+        document['id'] = str(document['_id'])
+        del document['_id']
+        return jsonify({'ok': True, 'data': document}), 200
+
+    elif request.method == 'PUT':
+        if 'id' not in request.get_json():
+            return jsonify({'ok': False, 'message': "'id' is expected in the body of the json"}), 400
+
+        action = action_collection.find_one({'_id': ObjectId(request.get_json()['id'])})
+        if action:
+            action_collection.update_one({'_id': ObjectId(request.get_json()['id'])},
+                                         {'$set': {'completed': not action['completed']}})
+            return jsonify({'ok': True}), 200
+        return jsonify({'ok': False, 'message': '{} cannot be found'.format(request.get_json()['id'])}), 400
 
 
 @app.route('/waste-types')
 def get_waste_types():
     return jsonify({'waste-types:': ['starbucks', 'paper cups', 'straws', 'forks', 'knifes', 'paper', 'cans']}), 200
+
 
 @app.route('/static/<path:path>')
 def serve_static_file(path):

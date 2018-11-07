@@ -10,5 +10,6 @@
 
 export const environment = {
   production: false,
-  serverURL: 'https://waste-audit.herokuapp.com',
+  // serverURL: 'https://waste-audit.herokuapp.com',
+  serverURL: 'http://localhost:5000'
 };

@@ -22,6 +22,12 @@ export class TrashQueryService {
 
   }
 
+  addLocation(location) {
+    return this.http.post(environment.serverURL + '/locations', {
+      'location': location
+    });
+  }
+
   getTrashTypes(): Observable<any> {
     // relative url of the waste types endpoint
     const url = '/waste-types';
@@ -54,6 +60,23 @@ export class TrashQueryService {
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
+  }
+
+  getActionItems() {
+    return this.http.get(environment.serverURL + '/actions');
+  }
+
+  postActionItems(location: string, action: string) {
+    return this.http.post(environment.serverURL + '/actions', {
+      'location': location,
+      'action': action
+    });
+  }
+
+  updateActionItemStatus(id: string) {
+    return this.http.put(environment.serverURL + '/actions', {
+      'id': id
+    });
   }
 
 }

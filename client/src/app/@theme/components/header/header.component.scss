@@ -144,7 +144,10 @@
   /* stylelint-disable */
   toaster-container /deep/ {
     position: absolute;
-    right: 50%;
+    display: block;
+    background: #00d977;
+    right: 0;
+    z-index: 99999;
     #toast-container .toast-close-button {
       right: 0;
     }

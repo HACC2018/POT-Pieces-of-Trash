@@ -45,10 +45,13 @@ export class HeaderComponent implements OnInit {
   goToUploadImage() {
     this.modalService.open(UploadImageModalComponent, { size: 'lg', container: 'nb-layout' })
       .result.then((result) => {
+      if (result) {
         this.showToast('Photo submitted', 'We\'ll let you know when it\'s done processing.');
-      this.trashQueryService.submitImage(result).subscribe(res => {
-        this.showToast('Done processing!', 'Data is now available.');
-          }, error => { });
+        this.trashQueryService.submitImage(result).subscribe(res => {
+          this.showToast('Done processing!', 'Data is now available.');
+        }, error => {
+        });
+      }
     });
   }
 
@@ -60,7 +63,7 @@ export class HeaderComponent implements OnInit {
       tapToDismiss: true,
       preventDuplicates: true,
       animation: 'fade',
-      limit: 5,
+      limit: 1,
     });
     const toast: Toast = {
       type: 'default',

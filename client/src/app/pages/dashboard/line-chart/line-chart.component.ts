@@ -61,23 +61,12 @@ export class LineChartComponent implements OnInit {
   }
   
   getSelectedLocations() {
-    let locations = [];
-    if (this.selectedLocations.length == this.locationDropdownList.length) {
-      locations.push('all');
-    } else {
-      locations = _.map(this.selectedLocations, (locationItem) => locationItem['item_text']);
-    }
+    let locations = _.map(this.selectedLocations, (locationItem) => locationItem['item_text']);
     return locations;
   }
 
   getSelectedWastes() {
-    let wastes = [];
-    if (this.selectedWastes.length == this.wasteDropdownList.length) {
-      wastes.push('all');
-    } else {
-      wastes = _.map(this.selectedWastes, (wasteItem) => wasteItem['item_text']);
-    }
-
+    let wastes = _.map(this.selectedWastes, (wasteItem) => wasteItem['item_text']);
     return wastes;
   }
 
@@ -140,6 +129,7 @@ export class LineChartComponent implements OnInit {
             item_id: index, item_text: waste
           });
         });
+        this.wasteDropdownList.unshift({item_id: -1, item_text: 'all'})
 
         this.locationDropdownList = [];
         _.forEach(data['avail-locations'], (location, index) => {
@@ -147,6 +137,7 @@ export class LineChartComponent implements OnInit {
             item_id: index, item_text: location
           });
         });
+        this.locationDropdownList.unshift({item_id: -1, item_text: 'all'})
 
         this.formatData();
       });

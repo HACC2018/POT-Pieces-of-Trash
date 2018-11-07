@@ -190,6 +190,8 @@ export class LineChartComponent implements OnInit {
       name: name,
       type: 'line',
       data: data,
+      stack: 'Total amount',
+      areaStyle: { normal: { opacity: echarts.areaOpacity } },
     };
   }
   /*

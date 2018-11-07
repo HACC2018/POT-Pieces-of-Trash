@@ -44,9 +44,10 @@ def train_model(analyer, features="data/features.pkl", labels="data/labels.txt")
 analyzer = trash_counter.TrashCounter()
 train_model(analyzer)
 
+
 @app.route('/')
 def hello():
-    return "Hello World"
+    return send_from_directory('.', 'index.html')
 
 
 @app.route("/ping")
@@ -97,13 +98,18 @@ def analyze_image():
             os.makedirs(app.config['UPLOAD_FOLDER'])
 
         image.save(path)
-        wastes = classify_waste(path)
-
+        # wastes = classify_waste(path)
+        #
+        # result = {'location': request.form['location'],
+        #           'timestamp': timestamp,
+        #           'image': path,
+        #           'wastes': wastes['wastes'],
+        #           'image_chips': wastes['image_chips']}
+        wastes = trash_analysis(path)
         result = {'location': request.form['location'],
                   'timestamp': timestamp,
                   'image': path,
-                  'wastes': wastes['wastes'],
-                  'image_chips': wastes['image_chips']}
+                  'wastes': wastes}
 
         result_collection.insert_one(result)
         result['id'] = str(result['_id'])
@@ -292,7 +298,7 @@ def time_series():
         return jsonify(result), 200
 
     elif request.method == 'GET':
-        all_data = query_data(0, int(time.mktime(datetime.datetime.now().timetuple())) + 60*60*24, 'all')
+        all_data = query_data(0, int(time.mktime(datetime.datetime.now().timetuple())) + 60 * 60 * 24, 'all')
         dates = set()
         for entry in all_data:
             dates.add(get_lowerbound_timestamp(entry['timestamp']))
@@ -373,9 +379,48 @@ def get_waste_types():
     return jsonify({'waste-types:': ['starbucks', 'paper cups', 'straws', 'forks', 'knifes', 'paper', 'cans']}), 200
 
 
+@app.route('/ranking')
+def get_rankings():
+    locations = [location['location'] for location in location_collection.find({}, {'location': True, '_id': False})]
+    all_data = query_data(0, int(time.mktime(datetime.datetime.now().timetuple())) + 60 * 60 * 24, locations)
+    location_data = {}
+    for data in all_data:
+        if data['location'] not in location_data:
+            location_data[data['location']] = []
+
+        waste_data = data['wastes']
+        total_waste = 0
+        for waste in waste_data:
+            total_waste += waste_data[waste]
+
+        location_data[data['location']].append(total_waste)
+
+    location_rank = []
+    for location in location_data:
+        if len(location_data[location]) == 1:
+            location_rank.append({'location': location, 'change': 1})
+        else:
+            change_sum = 0
+            for ii in range(len(location_data[location]) - 1):
+                change_sum += location_data[location][ii + 1] / float(location_data[location][ii])
+            location_rank.append({'location': location, 'change': float(change_sum) / len(location_data[location])})
+
+    location_rank.sort(key=lambda el: el['change'])
+    return jsonify(location_rank), 200
+
+
 @app.route('/static/<path:path>')
 def serve_static_file(path):
     return send_from_directory('static', path)
+
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    if os.path.isfile(path):
+        return send_from_directory('.', path)
+    else:
+        return '', 404
 
 
 if __name__ == '__main__':

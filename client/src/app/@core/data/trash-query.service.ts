@@ -108,4 +108,8 @@ export class TrashQueryService {
     });
   }
 
+  getRankings() {
+    return this.http.get(environment.serverURL + '/ranking');
+  }
+
 }

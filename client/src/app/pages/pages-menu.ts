@@ -11,5 +11,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'nb-location',
     link: '/pages/actions',
     home: true,
+  }, {
+    title: 'Ranking',
+    icon: 'nb-lightbulb',
+    link: '/pages/ranking',
+    home: true,
   }
 ];

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, AfterViewChecked} from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewChecked, Input} from '@angular/core';
 import * as _ from 'lodash';
 import { TrashQueryService } from '../../../@core/data/trash-query.service';
 
@@ -9,10 +9,11 @@ import { TrashQueryService } from '../../../@core/data/trash-query.service';
 })
 export class PieChartComponent implements OnInit {
 
+  @Input() trashTypes: string[];
+
   locations: string[];
   dates: number[] = [];
   locationsByDate = {};
-  trashTypes: string[];
   formattedPieChartData: any[];
 
   @ViewChild('selectedLocation') selectedLocation;

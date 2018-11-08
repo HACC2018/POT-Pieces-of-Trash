@@ -1,0 +1,52 @@
+<ng-container *ngFor="let result of results">
+    <div class="card-columns">
+        <div>
+            <nb-card status="success">
+                <nb-card-header>
+                    Taken at {{ epochTimeToDate(result.timestamp) }} at {{ formatLabel(result.location) }}
+                </nb-card-header>
+                <nb-card-body>
+                    <img src="{{ wrapImageURL(result.image) }}" style="width:200px;">
+                </nb-card-body>
+            </nb-card>
+        </div>
+        <div>
+            <nb-card>
+                <nb-card-header>
+                    Counted:
+                </nb-card-header>
+                <nb-card-body>
+                    <nb-list>
+                        <nb-list-item *ngFor="let waste of result.wastes">
+                            {{ formatLabel(waste.waste) }} : {{ waste.count }}
+                        </nb-list-item>
+                    </nb-list>
+                </nb-card-body>
+            </nb-card>
+        </div>
+        <div *ngIf="hasImageChips(result)">
+            <ng-container *ngFor="let chip of result.image_chips">
+                <nb-card>
+                    <nb-card-header>
+                        <div class="row">
+                            <div class="input-group col-sm-12">
+                                <input type="text" class="form-control" value="{{ formatLabel(chip.label) }}" nbInput fieldSize="small">
+                                <span class="input-group-append">
+                                    <button class="btn btn-success input-group-text">
+                                        Correct
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </nb-card-header>
+                    <nb-card-body>
+                        <img src="{{ wrapImageURL(chip.image_path) }}" style="width:200px;">
+                    </nb-card-body>
+                </nb-card>
+            </ng-container>
+        </div>
+    </div>
+    <br>
+    <br>
+    <hr>
+</ng-container>

@@ -7,14 +7,16 @@ export const MENU_ITEMS: NbMenuItem[] = [
     link: '/pages/dashboard',
     home: true,
   }, {
+    title: 'Analysis',
+    icon: 'fa fa-chart-bar',
+    link: '/pages/results',
+  }, {
     title: 'Locations',
     icon: 'nb-location',
     link: '/pages/actions',
-    home: true,
   }, {
     title: 'Ranking',
     icon: 'nb-lightbulb',
     link: '/pages/ranking',
-    home: true,
   }
 ];

@@ -112,4 +112,8 @@ export class TrashQueryService {
     return this.http.get(environment.serverURL + '/ranking');
   }
 
+  getHistoricalResults() {
+    return this.http.get(environment.serverURL + '/results');
+  }
+
 }

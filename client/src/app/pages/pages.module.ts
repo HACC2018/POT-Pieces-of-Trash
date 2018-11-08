@@ -7,6 +7,7 @@ import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ActionsModule } from './actions/actions.module';
 import { RankingsModule } from './rankings/rankings.module';
+import { ResultsModule } from './results/results.module';
 
 const PAGES_COMPONENTS = [
   PagesComponent,
@@ -20,6 +21,7 @@ const PAGES_COMPONENTS = [
     DashboardModule,
     ActionsModule,
     RankingsModule,
+    ResultsModule,
   ],
   declarations: [
     ...PAGES_COMPONENTS,

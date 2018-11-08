@@ -7,15 +7,13 @@
       <nb-card-body>
         <form enctype='multipart/form-data'>
           <div class="row">
-            <div class="col-sm-9">
-              <div class="form-group">
-                <input #newLocationBox type="text" placeholder="New location" class="form-control">
-              </div>
-            </div>
-            <div class="col-sm-3">
-              <button class="btn btn-primary" (click)="addNewLocation(newLocationBox.value)">
-                Add
-              </button>
+            <div class="input-group col-sm-12">
+              <input #newLocationBox type="text" class="form-control" placeholder="New Location">
+              <span class="input-group-append">
+                <button class="btn btn-success input-group-text" (click)="addNewLocation(newLocationBox.value)">
+                  Add
+                </button>
+              </span>
             </div>
           </div>
         </form>
@@ -44,8 +42,8 @@
                   <td>{{ actionItem.action }}</td>
                   <td>{{ epochTimeToDate(actionItem.timestamp) }}</td>
                   <td>
-                    <input *ngIf="actionItem.completed" type="checkbox" checked (change)="updateCompletedStatus(actionItem.id)"  />
-                    <input *ngIf="!actionItem.completed" type="checkbox" (change)="updateCompletedStatus(actionItem.id)" />   
+                    <input *ngIf="actionItem.completed" type="checkbox" checked (change)="updateCompletedStatus(actionItem.id)" />
+                    <input *ngIf="!actionItem.completed" type="checkbox" (change)="updateCompletedStatus(actionItem.id)" />
                   </td>
                 </tr>
               </ng-container>
@@ -54,20 +52,18 @@
         </nb-card-body>
         <nb-card-footer>
           <div class="row">
-              <div class="col-sm-9">
-                  <div class="form-group">
-                    <input #newActionBox type="text" placeholder="New Action" class="form-control">
-                  </div>
-                </div>
-                <div class="col-sm-3">
-                  <button class="btn btn-primary" (click)="addNewAction(action.location, newActionBox.value)">
-                    Add
-                  </button>
-                </div>
+            <div class="input-group col-sm-12">
+              <input #newActionBox type="text" class="form-control" placeholder="New Action">
+              <span class="input-group-append">
+                <button class="btn btn-success input-group-text" (click)="addNewAction(action.location, newActionBox.value)">
+                  Add
+                </button>
+              </span>
+            </div>
           </div>
         </nb-card-footer>
 
       </nb-card>
     </div>
-  </ng-container> 
+  </ng-container>
 </div>

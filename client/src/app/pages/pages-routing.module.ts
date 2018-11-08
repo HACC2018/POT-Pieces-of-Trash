@@ -6,6 +6,7 @@ import { NotFoundComponent } from './miscellaneous/not-found/not-found.component
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ActionsComponent } from './actions/actions.component';
 import { RankingsComponent } from './rankings/rankings.component';
+import { ResultsComponent } from './results/results.component';
 
 const routes: Routes = [{
   path: '',
@@ -20,6 +21,9 @@ const routes: Routes = [{
     path: 'ranking',
     component: RankingsComponent,
   },{
+    path: 'results',
+    component: ResultsComponent,
+  },{ 
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',

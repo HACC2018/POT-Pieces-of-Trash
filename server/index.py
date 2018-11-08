@@ -98,18 +98,20 @@ def analyze_image():
             os.makedirs(app.config['UPLOAD_FOLDER'])
 
         image.save(path)
-        # wastes = classify_waste(path)
-        #
-        # result = {'location': request.form['location'],
-        #           'timestamp': timestamp,
-        #           'image': path,
-        #           'wastes': wastes['wastes'],
-        #           'image_chips': wastes['image_chips']}
-        wastes = trash_analysis(path)
-        result = {'location': request.form['location'],
-                  'timestamp': timestamp,
-                  'image': path,
-                  'wastes': wastes}
+
+        if True:
+            wastes = classify_waste(path)
+            result = {'location': request.form['location'],
+                      'timestamp': timestamp,
+                      'image': path,
+                      'wastes': wastes['wastes'],
+                      'image_chips': wastes['image_chips']}
+        else:
+            wastes = trash_analysis(path)
+            result = {'location': request.form['location'],
+                      'timestamp': timestamp,
+                      'image': path,
+                      'wastes': wastes}
 
         result_collection.insert_one(result)
         result['id'] = str(result['_id'])
@@ -152,6 +154,14 @@ def query_data(from_time, to_time, location):
 
 def get_lowerbound_timestamp(epoch):
     return int(time.mktime(datetime.date.fromtimestamp(epoch).timetuple()))
+
+
+@app.route('/results', methods=['GET'])
+def get_results():
+    all_data = query_data(0, int(time.mktime(datetime.datetime.now().timetuple())) + 60 * 60 * 24, 'all')
+    all_data = list(all_data)
+    all_data.reverse()
+    return jsonify(all_data), 200
 
 
 @app.route('/pie', methods=['POST', 'GET'])
@@ -381,8 +391,7 @@ def get_waste_types():
 
 @app.route('/ranking')
 def get_rankings():
-    locations = [location['location'] for location in location_collection.find({}, {'location': True, '_id': False})]
-    all_data = query_data(0, int(time.mktime(datetime.datetime.now().timetuple())) + 60 * 60 * 24, locations)
+    all_data = query_data(0, int(time.mktime(datetime.datetime.now().timetuple())) + 60 * 60 * 24, 'all')
     location_data = {}
     for data in all_data:
         if data['location'] not in location_data:
